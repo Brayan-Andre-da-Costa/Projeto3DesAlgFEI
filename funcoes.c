@@ -20,6 +20,7 @@ void menu(){
     printf("6 - Vender criptomoedas\n");
     printf("7 - Atualizar cotacao\n");
     printf("8 - Sair\n");
+    printf("sffadfsd")
 }
 
 // ----------------------------------------------------------------------------------------
