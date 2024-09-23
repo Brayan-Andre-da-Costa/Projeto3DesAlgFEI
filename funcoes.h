@@ -8,4 +8,6 @@ void quatro();
 
 void cinco();
 
+void sete();
+
 extern int senha;

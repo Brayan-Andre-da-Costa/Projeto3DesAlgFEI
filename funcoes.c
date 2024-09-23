@@ -2,6 +2,8 @@
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
+#include <time.h>
 
 //VARIAVEIS GLOBAIS
 int senha = 1234;
@@ -108,7 +110,6 @@ char verificar;
 
 void cinco(){
     printf("***********************************************************************\n");
-    printf("")
     printf("1 - BITCOIN // Taxa de compra em 2%% \n");
     printf("2 - ETHEREUM // Taxa de compra em 1%%\n");
     printf("3 - RIPPLE // Taxa de compra em 1%%\n");
@@ -227,4 +228,45 @@ void cinco(){
     
 
 
+}
+
+void sete(){
+    printf("Deseja atualizar a cotação de todas as criptomoedas? (S/N): ");
+    scanf(" %c", &verificar);
+    if (toupper(verificar) == 'S'){
+
+        void atualizarValor(float* valor, float* variacao) {
+            *valor = *valor * (1.0 + *variacao);
+        }
+
+        srand(time(NULL));
+
+        float variacao_bit =  (rand()% 101 - 50) / 1000.00;
+        float variacao_eth =  (rand()% 101 - 50) / 1000.00;
+        float variacao_rip =  (rand()% 101 - 50) / 1000.00;
+
+        //att cotação bitcoin
+        printf("Valor anterior a atualização: %.2f \n", valoresC.v_bit);
+        atualizarValor(&valoresC.v_bit, &variacao_bit);
+        printf("Atualização da cotação do bitcoin: %.2f\n", valoresC.v_bit);
+        printf("variação: %.3f\n", variacao_bit);
+        printf("***********************************************************************\n");
+
+        //att cotação ethereum
+        printf("Valor anterior a atualização: %.2f \n", valoresC.v_eth);
+        atualizarValor(&valoresC.v_eth, &variacao_eth);
+        printf("Atualização da cotação do bitcoin: %.2f\n", valoresC.v_eth);
+        printf("variação: %.3f\n", variacao_eth);
+        printf("***********************************************************************\n");
+
+        //att cotação riple
+        printf("Valor anterior a atualização: %.2f \n", valoresC.v_rip);
+        atualizarValor(&valoresC.v_rip, &variacao_rip);
+        printf("Atualização da cotação do bitcoin: %.2f\n", valoresC.v_rip);
+        printf("variação: %.3f\n", variacao_rip);
+
+    }
+    else{
+        printf("Os valores das criptomoedas não serão alterados! \n");
+    }
 }

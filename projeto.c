@@ -1,5 +1,9 @@
 #include <stdio.h> 
 #include <stdbool.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
+#include <time.h>
 #include "funcoes.h"
 
 
@@ -44,7 +48,7 @@ int main(){
             // seis();
         }
         else if(op==7){
-            // sete();
+            sete();
         }
         else if(op==8){
             break;
