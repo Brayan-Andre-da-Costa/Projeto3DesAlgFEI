@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include "funcoes.h"
 
-int senha = 1234;
+
 int cpf = 12;
 int main(){
     while (true){
