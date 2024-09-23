@@ -108,6 +108,7 @@ char verificar;
 
 void cinco(){
     printf("***********************************************************************\n");
+    printf("")
     printf("1 - BITCOIN // Taxa de compra em 2%% \n");
     printf("2 - ETHEREUM // Taxa de compra em 1%%\n");
     printf("3 - RIPPLE // Taxa de compra em 1%%\n");
