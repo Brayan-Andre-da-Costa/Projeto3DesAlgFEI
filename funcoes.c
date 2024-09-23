@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+
 //VARIAVEIS GLOBAIS
 int senha = 1234;
 
@@ -91,7 +92,7 @@ void quatro(){
     }
 
 // ----------------------------------------------------------------------------------------
-// COMPRAR/VENDER CRIPTOMOEDAS
+// COMPRAR CRIPTOS
 
 typedef struct{
     float v_bit;
@@ -230,6 +231,8 @@ void cinco(){
 
 }
 
+// ----------------------------------------------------------------------------------------
+// ATUALIZAR COTAÇÃO
 void sete(){
     printf("Deseja atualizar a cotação de todas as criptomoedas? (S/N): ");
     scanf(" %c", &verificar);
