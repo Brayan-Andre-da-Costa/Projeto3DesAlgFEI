@@ -4,13 +4,11 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <time.h>
-
 //VARIAVEIS GLOBAIS
 
-int senha =1234;
+char senAcesso;
 
-int senAcesso;
-
+char senA;
 
 // FUNÇÃO MENU
 
@@ -68,7 +66,6 @@ void tres(){
 
 void quatro(){
     float saque;
-    int senha = 1234;
 
     printf("***********************************************************************\n");
     printf("Insira o quanto deseja sacar: ");
@@ -79,8 +76,8 @@ void quatro(){
         }
         else{
             printf("Insira sua SENHA: ");
-            scanf("%d", &senAcesso);
-            if (senha==senAcesso){
+            scanf("%c", &senAcesso);
+            if (senA==senAcesso){
                 carteira.real -= saque;
                 printf("Valor sacado R$ %.2f\n ", saque);
                 printf("Novo saldo R$ %.2f\n ", carteira.real);
@@ -123,8 +120,8 @@ void cinco(){
         scanf("%f", &valC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf("%d", &senAcesso);
-        if (senAcesso == senha){
+        scanf("%c", &senAcesso);
+        if (senAcesso == senA){
             criptoC =  valC/valoresC.v_bit;
             taxa = valC * 0.02;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -158,8 +155,8 @@ void cinco(){
         scanf("%f", &valC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf("%d", &senAcesso);
-        if (senAcesso == senha){
+        scanf("%c", &senAcesso);
+        if (senAcesso == senA){
             criptoC =  valC/valoresC.v_eth;
             taxa = valC * 0.01;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -194,8 +191,8 @@ void cinco(){
         scanf("%f", &valC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf("%d", &senAcesso);
-        if (senAcesso == senha){
+        scanf("%c", &senAcesso);
+        if (senAcesso == senA){
             criptoC =  valC/valoresC.v_rip;
             taxa = valC * 0.01;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -231,7 +228,7 @@ void cinco(){
 // ----------------------------------------------------------------------------------------
 // VENDER CRIPTOS
 
-float qtdC;
+float qtdV;
 
 void seis(){
     printf("***********************************************************************\n");
@@ -243,27 +240,27 @@ void seis(){
     if (opcao ==  1){
         printf("Valor do BITCOIN R$ %.2f\n", valoresC.v_bit);
         printf("Digite a quantidade de bitcoin que deseja vender: ");
-        scanf("%f", &qtdC);
+        scanf("%f", &qtdV);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf("%d", &senAcesso);
-        if (senAcesso == senha){
-            criptoC =  qtdC*valoresC.v_bit;
+        scanf("%c", &senAcesso);
+        if (senAcesso == senA){
+            criptoC =  qtdV*valoresC.v_bit;
             taxa = criptoC * 0.03;
             printf("Valor da taxa: R$ %.2f\n", taxa);
             totct = criptoC - taxa;
-            printf("Valor a ser vendido pela criptomoeda: R$ %.2f\n", totct);
+            printf("Valor a ser recebido pela criptomoeda: R$ %.2f\n", totct);
             printf("***********************************************************************\n");
             printf("Você realmente deseja vender o BITCOIN? (S/N): ");
             scanf(" %c", &verificar);
             if (toupper(verificar) == 'S'){
-                if (qtdC > carteira.bitcoin){
+                if (qtdV > carteira.bitcoin){
                     printf("Saldo insuficiente!!!\n");
                 }
                 else{
                     printf("Venda realizada com sucesso!!!\n");
                     carteira.real += totct;
-                    carteira.bitcoin -= qtdC ;
+                    carteira.bitcoin -= qtdV ;
                     printf("Total de Bitcoins em sua carteira: %.4f\n", carteira.bitcoin);
                 }
             }
@@ -275,31 +272,31 @@ void seis(){
             printf("Senha errada\n");    
         }
     }
-    else if (opcao == 2){
+    else if (opcao ==  2){
         printf("Valor do Ethereum R$ %.2f\n", valoresC.v_eth);
-        printf("Digite o valor que deseja comprar: ");
-        scanf("%f", &valC);
+        printf("Digite a quantidade de ethereum que deseja vender: ");
+        scanf("%f", &qtdV);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf("%d", &senAcesso);
-        if (senAcesso == senha){
-            criptoC =  valC/valoresC.v_eth;
-            taxa = valC * 0.02;
+        scanf("%c", &senAcesso);
+        if (senAcesso == senA){
+            criptoC =  qtdV*valoresC.v_eth;
+            taxa = criptoC * 0.03;
             printf("Valor da taxa: R$ %.2f\n", taxa);
-            totct = valC + taxa;
-            printf("Valor a ser pago pela criptomoeda: R$ %.2f\n", totct);
+            totct = criptoC - taxa;
+            printf("Valor a ser recebido pela criptomoeda: R$ %.2f\n", totct);
             printf("***********************************************************************\n");
-            printf("Você realmente deseja comprar o BITCOIN? (S/N): ");
+            printf("Você realmente deseja vender o BITCOIN? (S/N): ");
             scanf(" %c", &verificar);
             if (toupper(verificar) == 'S'){
-                if (totct < carteira.real){
+                if (qtdV > carteira.ethereum){
                     printf("Saldo insuficiente!!!\n");
                 }
                 else{
-                    printf("Compra realizada com sucesso!!!\n");
+                    printf("Venda realizada com sucesso!!!\n");
                     carteira.real += totct;
-                    carteira.ethereum -= criptoC;
-                    printf("Total de Ethereums em sua carteira: %.4f\n", carteira.ethereum);
+                    carteira.ethereum -= qtdV ;
+                    printf("Total de Bitcoins em sua carteira: %.4f\n", carteira.ethereum);
                 }
             }
             else{
@@ -309,33 +306,32 @@ void seis(){
         else{
             printf("Senha errada\n");    
         }
-       
     }
-    else if (opcao == 3){
+    else if(opcao ==  3){
         printf("Valor do Ripple R$ %.2f\n", valoresC.v_rip);
-        printf("Digite o valor que deseja vender: ");
-        scanf("%f", &valC);
+        printf("Digite a quantidade de ripple que deseja vender: ");
+        scanf("%f", &qtdV);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf("%d", &senAcesso);
-        if (senAcesso == senha){
-            criptoC =  valC/valoresC.v_rip;
-            taxa = valC * 0.01;
+        scanf("%c", &senAcesso);
+        if (senAcesso == senA){
+            criptoC =  qtdV*valoresC.v_rip;
+            taxa = criptoC * 0.03;
             printf("Valor da taxa: R$ %.2f\n", taxa);
-            totct = valC + taxa;
-            printf("Valor a ser pago pela criptomoeda: R$ %.2f\n", totct);
+            totct = criptoC - taxa;
+            printf("Valor a ser recebido pela criptomoeda: R$ %.2f\n", totct);
             printf("***********************************************************************\n");
-            printf("Você realmente deseja comprar o BITCOIN? (S/N): ");
+            printf("Você realmente deseja vender o BITCOIN? (S/N): ");
             scanf(" %c", &verificar);
             if (toupper(verificar) == 'S'){
-                if (totct < carteira.real){
+                if (qtdV > carteira.ripple){
                     printf("Saldo insuficiente!!!\n");
                 }
                 else{
-                    printf("Compra realizada com sucesso!!!\n");
+                    printf("Venda realizada com sucesso!!!\n");
                     carteira.real += totct;
-                    carteira.ripple -= criptoC;
-                    printf("Total de Ripples em sua carteira: %.4f\n", carteira.ripple);
+                    carteira.ripple -= qtdV ;
+                    printf("Total de Bitcoins em sua carteira: %.4f\n", carteira.ripple);
                 }
             }
             else{
@@ -345,7 +341,6 @@ void seis(){
         else{
             printf("Senha errada\n");    
         }
-       
     }
     else{
         printf("Criptomoeda nao encontrada!!!\n");
