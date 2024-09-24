@@ -68,7 +68,7 @@ int main() {
                 } else if (op == 5) {
                     cinco();
                 } else if (op == 6) {
-                    // seis();
+                    seis();
                 } else if (op == 7) {
                     sete();
                 } else if (op == 8) {
