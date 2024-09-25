@@ -12,4 +12,4 @@ void seis();
 
 void sete();
 
-extern int senha;
+extern char senA;

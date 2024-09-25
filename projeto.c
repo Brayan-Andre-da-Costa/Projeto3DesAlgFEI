@@ -53,6 +53,7 @@ int main() {
             printf("Login efetuado com sucesso\n");
 
             while (true) {
+                senA = s_sen;
                 menu();
                 int op;
                 printf("Digite sua opcao: ");
@@ -64,11 +65,11 @@ int main() {
                 } else if (op == 3) {
                     tres();
                 } else if (op == 4) {
-                    quatro();
+                    quatro(senA);
                 } else if (op == 5) {
-                    cinco();
+                    cinco(senA);
                 } else if (op == 6) {
-                    seis();
+                    seis(senA);
                 } else if (op == 7) {
                     sete();
                 } else if (op == 8) {
