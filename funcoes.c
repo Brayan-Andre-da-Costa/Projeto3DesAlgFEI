@@ -369,6 +369,7 @@ void sete(){
         float variacao_rip =  (rand()% 101 - 50) / 1000.00;
 
         //att cotação bitcoin
+        printf("printf");
         printf("Valor anterior a atualização: %.2f \n", valoresC.v_bit);
         atualizarValor(&valoresC.v_bit, &variacao_bit);
         printf("Atualização da cotação do bitcoin: %.2f\n", valoresC.v_bit);
