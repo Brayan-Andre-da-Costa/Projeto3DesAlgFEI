@@ -7,14 +7,18 @@
 
 //VARIAVEIS GLOBAIS
 
-int senha =1234;
+char senAcesso[12];
+char senha[12];
 
-int senAcesso;
+
+void passarSenha(const char* senAcesso){
+    strcpy(senha, senAcesso);
+}
 
 
 // FUNÇÃO MENU
 
-void menu(){
+int menu(){
     printf("***********************************************************************\n");
     printf("1 - Consultar saldo\n");
     printf("2 - Consultar extrato\n");
@@ -68,29 +72,27 @@ void tres(){
 
 void quatro(){
     float saque;
-    int senha = 1234;
 
     printf("***********************************************************************\n");
     printf("Insira o quanto deseja sacar: ");
-    scanf("%f", &saque);
+    scanf(" %f", &saque);
 
     if (saque>carteira.real){
         printf("O valor sacado e maior do que consta em conta\n");
+    }
+    else{         
+        printf("Insira sua SENHA: ");
+        scanf(" %11s", senAcesso);
+        if (strcmp(senha, senAcesso) == 0){
+            carteira.real -= saque;
+            printf("Valor sacado R$ %.2f\n ", saque);
+            printf("Novo saldo R$ %.2f\n ", carteira.real);
         }
         else{
-            printf("Insira sua SENHA: ");
-            scanf("%d", &senAcesso);
-            if (senha==senAcesso){
-                carteira.real -= saque;
-                printf("Valor sacado R$ %.2f\n ", saque);
-                printf("Novo saldo R$ %.2f\n ", carteira.real);
-            
-            }
-            else{
-                printf("Senha invalida\n");
-            }
+            printf("Senha invalida\n");
         }
-    }
+     }
+}
 
 // ----------------------------------------------------------------------------------------
 // COMPRAR CRIPTOS
@@ -123,8 +125,8 @@ void cinco(){
         scanf("%f", &valC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf("%d", &senAcesso);
-        if (senAcesso == senha){
+        scanf("%11s", senAcesso);
+        if (strcmp(senha, senAcesso) == 0){
             criptoC =  valC/valoresC.v_bit;
             taxa = valC * 0.02;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -158,8 +160,8 @@ void cinco(){
         scanf("%f", &valC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf("%d", &senAcesso);
-        if (senAcesso == senha){
+        scanf("%11s", senAcesso);
+        if (strcmp(senha, senAcesso) == 0){
             criptoC =  valC/valoresC.v_eth;
             taxa = valC * 0.01;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -194,8 +196,8 @@ void cinco(){
         scanf("%f", &valC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf("%d", &senAcesso);
-        if (senAcesso == senha){
+        scanf("%11s", senAcesso);
+        if (strcmp(senha, senAcesso) == 0){
             criptoC =  valC/valoresC.v_rip;
             taxa = valC * 0.01;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -246,8 +248,8 @@ void seis(){
         scanf(" %f", &qtdC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf(" %d", &senAcesso);
-        if (senAcesso == senha){
+        scanf(" %11s", senAcesso);
+        if (strcmp(senha, senAcesso) == 0){
             criptoC =  qtdC*valoresC.v_bit;
             taxa = criptoC * 0.03;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -281,8 +283,8 @@ void seis(){
         scanf(" %f", &qtdC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf(" %d", &senAcesso);
-        if (senAcesso == senha){
+        scanf(" %11s", senAcesso);
+        if (strcmp(senha, senAcesso) == 0){
             criptoC =  qtdC*valoresC.v_eth;
             taxa = criptoC * 0.02;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -316,8 +318,8 @@ void seis(){
         scanf(" %f", &qtdC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf(" %d", &senAcesso);
-        if (senAcesso == senha){
+        scanf(" %11s", senAcesso);
+        if (strcmp(senha, senAcesso) == 0){
             criptoC =  qtdC*valoresC.v_rip;
             taxa = criptoC * 0.01;
             printf("Valor da taxa: R$ %.2f\n", taxa);

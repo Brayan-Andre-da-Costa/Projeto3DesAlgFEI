@@ -12,4 +12,3 @@ void seis();
 
 void sete();
 
-extern int senha;

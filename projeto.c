@@ -16,6 +16,8 @@ struct usuario {
     char senha[20]; 
 };
 
+void passarSenha(const char* senAcesso);
+
 int main() {
 
     struct usuario Usuarios[NUM_USUARIO] = {
@@ -35,6 +37,8 @@ int main() {
 
         char s_cpf[12];
         char s_sen[20];  
+        char senAcesso[12];
+
 
         printf("Digite o CPF: ");
         scanf("%11s", s_cpf);  // 
@@ -53,10 +57,12 @@ int main() {
             printf("Login efetuado com sucesso\n");
 
             while (true) {
-                menu();
+                const char* sen96Acesso = s_sen;
+                passarSenha(senAcesso);
+                menu(s_sen);
                 int op;
                 printf("Digite sua opcao: ");
-                scanf("%d", &op);
+                scanf(" %d", &op);
                 if (op == 1) {
                     um();
                 } else if (op == 2) {
@@ -78,7 +84,8 @@ int main() {
                 }
             }
             break;  
-        } else {
+        } 
+        else {
             printf("Usuario inexistente\n");
         }       
     }
