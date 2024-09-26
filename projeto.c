@@ -57,7 +57,7 @@ int main() {
             printf("Login efetuado com sucesso\n");
 
             while (true) {
-                const char* sen96Acesso = s_sen;
+                const char* senAcesso = s_sen;
                 passarSenha(senAcesso);
                 menu(s_sen);
                 int op;
