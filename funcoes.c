@@ -313,7 +313,7 @@ void seis(){
                     printf("Compra realizada com sucesso!!!\n");
                     carteira.real += totct;
                     carteira.ethereum -= qtdC;
-                    printf("Total de Ethereum em sua carteira: %.4f\n", carteira.ethereum);
+                    printf("Total de Em em sua carteira: %.4f\n", carteira.ethereum);
                 }
             }
             else{
