@@ -10,5 +10,7 @@ void cinco();
 
 void seis();
 
+void dois();
+
 void sete();
 

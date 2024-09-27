@@ -6,15 +6,39 @@
 #include <time.h>
 //VARIAVEIS GLOBAIS
 
-char senAcesso[12];
+int dia, mes, ano;
+
+char senUser[12];
 char senha[12];
 
 
-void passarSenha(const char* senAcesso){
-    strcpy(senha, senAcesso);
+void passarSenha(const char* senUser){
+    strcpy(senha, senUser);
 }
 
 char senA;
+
+void pegarData(int *dia, int *mes, int *ano){
+    
+
+    time_t d = data(NULL);
+
+        struct tm *dataA = localtime(&d);
+
+    *dia = dataA->tm_mday;
+    *mes = dataA->tm_mon + 1;    
+    *ano = dataA->tm_year + 1900; 
+}
+
+// FUNÇÃO SALVAR EXTRATO
+
+void save_extrato(){
+
+}
+
+
+
+
 
 // FUNÇÃO MENU
 
@@ -49,6 +73,12 @@ void um(){
     printf("Voce tem essa quantidade de Ethereum em sua carteira: %.4f\n", carteira.ethereum);
     printf("Voce tem essa quantidade de Ripple em sua carteira: %.4f\n", carteira.ripple);
 }
+// ----------------------------------------------------------------------------------------
+// CONSULTAR SALDO
+
+void dois(){
+}
+
 
 // ----------------------------------------------------------------------------------------
 // DEPOSITAR
@@ -82,8 +112,8 @@ void quatro(){
     }
     else{         
         printf("Insira sua SENHA: ");
-        scanf(" %11s", senAcesso);
-        if (strcmp(senha, senAcesso) == 0){
+        scanf(" %11s", senUser);
+        if (strcmp(senha, senUser) == 0){
             carteira.real -= saque;
             printf("Valor sacado R$ %.2f\n ", saque);
             printf("Novo saldo R$ %.2f\n ", carteira.real);
@@ -126,8 +156,8 @@ void cinco(){
         scanf("%f", &valC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf("%11s", senAcesso);
-        if (strcmp(senha, senAcesso)==0) {
+        scanf("%11s", senUser);
+        if (strcmp(senha, senUser)==0) {
             criptoC =  valC/valoresC.v_bit;
             taxa = valC * 0.02;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -161,8 +191,8 @@ void cinco(){
         scanf("%f", &valC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf("%11s", senAcesso);
-        if (strcmp(senha, senAcesso) == 0){
+        scanf("%11s", senUser);
+        if (strcmp(senha, senUser) == 0){
             criptoC =  valC/valoresC.v_eth;
             taxa = valC * 0.01;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -197,8 +227,8 @@ void cinco(){
         scanf("%f", &valC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf("%11s", senAcesso);
-        if (strcmp(senha, senAcesso) == 0){
+        scanf("%11s", senUser);
+        if (strcmp(senha, senUser) == 0){
             criptoC =  valC/valoresC.v_rip;
             taxa = valC * 0.01;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -249,8 +279,8 @@ void seis(){
         scanf(" %f", &qtdC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf(" %11s", senAcesso);
-        if (strcmp(senha, senAcesso) == 0){
+        scanf(" %11s", senUser);
+        if (strcmp(senha, senUser) == 0){
             criptoC =  qtdC*valoresC.v_bit;
             taxa = criptoC * 0.03;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -284,8 +314,8 @@ void seis(){
         scanf(" %f", &qtdC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf(" %11s", senAcesso);
-        if (strcmp(senha, senAcesso) == 0){
+        scanf(" %11s", senUser);
+        if (strcmp(senha, senUser) == 0){
             criptoC =  qtdC*valoresC.v_eth;
             taxa = criptoC * 0.02;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -319,8 +349,8 @@ void seis(){
         scanf(" %f", &qtdC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf(" %11s", senAcesso);
-        if (strcmp(senha, senAcesso) == 0){
+        scanf(" %11s", senUser);
+        if (strcmp(senha, senUser) == 0){
             criptoC =  qtdC*valoresC.v_rip;
             taxa = criptoC * 0.01;
             printf("Valor da taxa: R$ %.2f\n", taxa);

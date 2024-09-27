@@ -7,14 +7,37 @@
 #define NUM_USUARIO 10
 #define NUM_EXTRATO 100
 
+
+
 struct extrato {
-    char desc[100];
+    char data[11];
+    double valor;
+    char desc[50];
 };
 
 struct usuario {
     char cpf[12];  
     char senha[20]; 
 };
+
+// void creat_ext(struct usuario u, struct extrato e){
+//     char name_arq[50];
+
+//     snprintf(name_arq, sizeof(name_arq), "%s_extrato.bin", u.cpf);
+
+//     FILE *file = fopen(name_arq, "ab");
+//     if (file == NULL){
+//         printf("erro ao abrir o arquivo");
+//         return;
+//     }
+
+//     fwrite(&e, sizeof(struct extrato), 1, file);
+
+//     fclose(file);
+// }
+
+// struct extrato extrato1 = {"24/09/2024", 100.50, "Comra no supermercado"};
+
 
 void passarSenha(const char* senAcesso);
 
@@ -34,6 +57,10 @@ int main() {
     };
     
     while (true) {
+
+        // for (int i = 0; i < NUM_USUARIO; i++) {
+        //     creat_ext(Usuarios[i], extrato1);
+        // }
 
         char s_cpf[12];
         char s_sen[20];  
@@ -57,8 +84,8 @@ int main() {
             printf("Login efetuado com sucesso\n");
 
             while (true) {
-                const char* senAcesso = s_sen;
-                passarSenha(senAcesso);
+                const char* senUser = s_sen;
+                passarSenha(senUser);
                 menu(s_sen);
                 int op;
                 printf("Digite sua opcao: ");
@@ -66,7 +93,7 @@ int main() {
                 if (op == 1) {
                     um();
                 } else if (op == 2) {
-                    // dois();
+                    dois();
                 } else if (op == 3) {
                     tres();
                 } else if (op == 4) {
