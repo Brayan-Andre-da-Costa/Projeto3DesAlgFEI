@@ -18,7 +18,7 @@ char senA;
 
 // FUNÇÃO MENU
 
-int menu(){
+void menu(){
     printf("***********************************************************************\n");
     printf("1 - Consultar saldo\n");
     printf("2 - Consultar extrato\n");
@@ -89,20 +89,11 @@ void quatro(){
             printf("Novo saldo R$ %.2f\n ", carteira.real);
         }
         else{
-            printf("Insira sua SENHA: ");
-            scanf("%c", &senAcesso);
-            if (senA==senAcesso){
-                carteira.real -= saque;
-                printf("Valor sacado R$ %.2f\n ", saque);
-                printf("Novo saldo R$ %.2f\n ", carteira.real);
-            
-            }
-            else{
                 printf("Senha invalida\n");
-            }
         }
-     }
+    }
 }
+
 
 // ----------------------------------------------------------------------------------------
 // COMPRAR CRIPTOS
@@ -136,9 +127,7 @@ void cinco(){
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
         scanf("%11s", senAcesso);
-        if (strcmp(senha, senAcesso) == 0){
-        scanf("%c", &senAcesso);
-        if (senAcesso == senA){
+        if (strcmp(senha, senAcesso)==0) {
             criptoC =  valC/valoresC.v_bit;
             taxa = valC * 0.02;
             printf("Valor da taxa: R$ %.2f\n", taxa);
