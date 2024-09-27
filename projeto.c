@@ -70,9 +70,9 @@ int main() {
                 } else if (op == 3) {
                     tres();
                 } else if (op == 4) {
-                    quatro(senA);
+                    quatro();
                 } else if (op == 5) {
-                    cinco(senA);
+                    cinco();
                 } else if (op == 6) {
                     seis();
                 } else if (op == 7) {
