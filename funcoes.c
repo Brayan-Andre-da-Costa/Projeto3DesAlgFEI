@@ -6,16 +6,113 @@
 #include <time.h>
 //VARIAVEIS GLOBAIS
 
-char senAcesso[12];
-char senha[12];
-
-
-void passarSenha(const char* senAcesso){
-    strcpy(senha, senAcesso);
-}
-
+int dia, mes, ano;
 char senA;
 
+char senUser[12];
+char senha[12];
+char cpf[12];
+
+double valorExt;
+char dataExt[11];
+char descExt[50];
+
+// ----------------------------------------------------------------------------------------
+// FUNÇÃO PASSAR SENHA e CPF DO USUARIO DE ARQUIVO PROJETO PARA FUNCOES
+
+void passarSenha(const char* senUser, const char* CPF){
+    strcpy(senha, senUser);
+    strcpy(cpf, CPF);
+}
+
+// ----------------------------------------------------------------------------------------
+// FUNÇÃO GERAR DATA ATUAL
+
+void pegarData(int *dia, int *mes){
+    
+    time_t d = time(NULL);
+
+    struct tm *dataA = localtime(&d);
+
+    *dia = dataA->tm_mday - 1;
+    *mes = dataA->tm_mon + 1;    
+}
+
+// ----------------------------------------------------------------------------------------
+// FUNÇÃO SALVAR EXTRATO
+
+struct extrato {
+    char dataExt[11];
+    double valorExt;
+    char descExt[50];
+};
+
+void save_extrato(const char* cpf, const char* dataExt, double valorExt, const char* descExt){
+    struct extrato e;
+
+    //determinação de envio
+    strncpy(e.dataExt, dataExt, sizeof(e, dataExt) -1);
+    e.valorExt = valorExt;
+    strncpy(e.descExt, descExt, sizeof(e.descExt)-1);
+
+    char nome_arq[50];
+
+    snprintf(nome_arq, sizeof(nome_arq), "%s_extrato.bin", cpf);
+
+    FILE *file = fopen(nome_arq,"ab");
+    if (file == NULL){
+        printf("Erro ao abrir o arquivo\n");
+    } 
+
+    fwrite(&e, sizeof(struct extrato), 1, file);
+
+    fclose(file);
+    printf("Extrato salvo com sucesso");
+}
+
+// ----------------------------------------------------------------------------------------
+// FUNÇAO LER EXTRATO // Consultar Saldo
+
+void lerExt(const char* cpf){
+    struct extrato e;
+    char nome_arq[50];
+    int totExt, extLer, i;
+
+    snprintf(nome_arq, sizeof(nome_arq), "%s_extrato.bin", cpf);
+
+    FILE *file = fopen(nome_arq, "rb");
+    if (file == NULL){
+        printf("Erro ao abrir o arquivo\n");
+    } 
+
+    //calcula a qtd de extrato no arquivo - end - size - cal 
+    fseek(file, 0, SEEK_END);
+    long tam_arq = ftell(file);
+    totExt = tam_arq / sizeof(struct extrato);
+
+    //vai determinar quantos extratos serão lidos a partir do calculo anterior, com um limite de 100
+    extLer = totExt > 100 ? 100: totExt;
+
+    //move o ponteiro de inicio de leitura para o inicio do arquivo
+    fseek(file, -(extLer * sizeof(struct extrato)), SEEK_END);
+
+    for (i = 0; i < extLer;i++){
+        printf("*******************************************\n");
+        fread(&e, sizeof(struct extrato),1,file);
+        printf("Data: %s\n", e.dataExt);
+        printf("Valor: %.3f\n", e.valorExt);
+        printf("Descrição da transação: %s\n", e.descExt);
+        
+    }
+
+    fclose(file);
+
+
+}
+
+
+
+// ----------------------------------------------------------------------------------------
 // FUNÇÃO MENU
 
 void menu(){
@@ -28,6 +125,8 @@ void menu(){
     printf("6 - Vender criptomoedas\n");
     printf("7 - Atualizar cotacao\n");
     printf("8 - Sair\n");
+    pegarData(&dia, &mes);
+    sprintf(dataExt," %02d/%02d\n", dia, mes);
 }
 
 // ----------------------------------------------------------------------------------------
@@ -49,7 +148,6 @@ void um(){
     printf("Voce tem essa quantidade de Ethereum em sua carteira: %.4f\n", carteira.ethereum);
     printf("Voce tem essa quantidade de Ripple em sua carteira: %.4f\n", carteira.ripple);
 }
-
 // ----------------------------------------------------------------------------------------
 // DEPOSITAR
 
@@ -64,6 +162,9 @@ void tres(){
     
     printf("Valor depositado R$ %.2f\n ", deposito);
     printf("Novo saldo R$ %.2f\n ", carteira.real);
+    valorExt = deposito;
+    sprintf(descExt,"Deposito em Reais.");
+    save_extrato(cpf, dataExt, valorExt, descExt);
 
 }
 
@@ -82,11 +183,14 @@ void quatro(){
     }
     else{         
         printf("Insira sua SENHA: ");
-        scanf(" %11s", senAcesso);
-        if (strcmp(senha, senAcesso) == 0){
+        scanf(" %11s", senUser);
+        if (strcmp(senha, senUser) == 0){
             carteira.real -= saque;
             printf("Valor sacado R$ %.2f\n ", saque);
             printf("Novo saldo R$ %.2f\n ", carteira.real);
+            valorExt = saque;
+            sprintf(descExt,"Saque em Reais");
+            save_extrato(cpf, dataExt, valorExt, descExt);
         }
         else{
                 printf("Senha invalida\n");
@@ -126,8 +230,8 @@ void cinco(){
         scanf("%f", &valC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf("%11s", senAcesso);
-        if (strcmp(senha, senAcesso)==0) {
+        scanf("%11s", senUser);
+        if (strcmp(senha, senUser)==0) {
             criptoC =  valC/valoresC.v_bit;
             taxa = valC * 0.02;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -145,6 +249,9 @@ void cinco(){
                     carteira.real -= totct;
                     carteira.bitcoin += criptoC;
                     printf("Total de Bitcoins em sua carteira: %.4f\n", carteira.bitcoin);
+                    valorExt = criptoC;
+                    sprintf(descExt,"Compra de Bitcoin.");
+                    save_extrato(cpf, dataExt, valorExt, descExt);
                 }
             }
             else{
@@ -161,8 +268,8 @@ void cinco(){
         scanf("%f", &valC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf("%11s", senAcesso);
-        if (strcmp(senha, senAcesso) == 0){
+        scanf("%11s", senUser);
+        if (strcmp(senha, senUser) == 0){
             criptoC =  valC/valoresC.v_eth;
             taxa = valC * 0.01;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -180,6 +287,9 @@ void cinco(){
                     carteira.real -= totct;
                     carteira.ethereum += criptoC;
                     printf("Total de Ethereums em sua carteira: %.4f\n", carteira.ethereum);
+                    valorExt = criptoC;
+                    sprintf(descExt,"Compra de Ethereuum.");
+                    save_extrato(cpf, dataExt, valorExt, descExt);
                 }
             }
             else{
@@ -197,8 +307,8 @@ void cinco(){
         scanf("%f", &valC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf("%11s", senAcesso);
-        if (strcmp(senha, senAcesso) == 0){
+        scanf("%11s", senUser);
+        if (strcmp(senha, senUser) == 0){
             criptoC =  valC/valoresC.v_rip;
             taxa = valC * 0.01;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -216,6 +326,9 @@ void cinco(){
                     carteira.real -= totct;
                     carteira.ripple += criptoC;
                     printf("Total de Ripples em sua carteira: %.4f\n", carteira.ripple);
+                    valorExt = criptoC;
+                    sprintf(descExt,"Compra de Ripple.");
+                    save_extrato(cpf, dataExt, valorExt, descExt);
                 }
             }
             else{
@@ -249,8 +362,8 @@ void seis(){
         scanf(" %f", &qtdC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf(" %11s", senAcesso);
-        if (strcmp(senha, senAcesso) == 0){
+        scanf(" %11s", senUser);
+        if (strcmp(senha, senUser) == 0){
             criptoC =  qtdC*valoresC.v_bit;
             taxa = criptoC * 0.03;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -264,10 +377,13 @@ void seis(){
                     printf("Saldo insuficiente!!!\n");
                 }
                 else{
-                    printf("Compra realizada com sucesso!!!\n");
+                    printf("Venda realizada com sucesso!!!\n");
                     carteira.real += totct;
                     carteira.bitcoin -= qtdC;
                     printf("Total de Bitcoins em sua carteira: %.4f\n", carteira.bitcoin);
+                    valorExt = qtdC;
+                    sprintf(descExt,"Venda de Bitcoin.");
+                    save_extrato(cpf, dataExt, valorExt, descExt);
                 }
             }
             else{
@@ -284,8 +400,8 @@ void seis(){
         scanf(" %f", &qtdC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf(" %11s", senAcesso);
-        if (strcmp(senha, senAcesso) == 0){
+        scanf(" %11s", senUser);
+        if (strcmp(senha, senUser) == 0){
             criptoC =  qtdC*valoresC.v_eth;
             taxa = criptoC * 0.02;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -302,7 +418,7 @@ void seis(){
                     printf("Compra realizada com sucesso!!!\n");
                     carteira.real += totct;
                     carteira.ethereum -= qtdC;
-                    printf("Total de Em em sua carteira: %.4f\n", carteira.ethereum);
+                    printf("Total de Ethereum em sua carteira: %.4f\n", carteira.ethereum);
                 }
             }
             else{
@@ -319,8 +435,8 @@ void seis(){
         scanf(" %f", &qtdC);
         printf("***********************************************************************\n");
         printf("Insira sua SENHA: ");
-        scanf(" %11s", senAcesso);
-        if (strcmp(senha, senAcesso) == 0){
+        scanf(" %11s", senUser);
+        if (strcmp(senha, senUser) == 0){
             criptoC =  qtdC*valoresC.v_rip;
             taxa = criptoC * 0.01;
             printf("Valor da taxa: R$ %.2f\n", taxa);
@@ -338,6 +454,9 @@ void seis(){
                     carteira.real += totct;
                     carteira.ripple -= qtdC;
                     printf("Total de Ripple em sua carteira: %.4f\n", carteira.ripple);
+                    valorExt = qtdC;
+                    sprintf(descExt,"Venda de Ripple.");
+                    save_extrato(cpf, dataExt, valorExt, descExt);
                 }
             }
             else{
