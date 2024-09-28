@@ -7,14 +7,6 @@
 #define NUM_USUARIO 10
 #define NUM_EXTRATO 100
 
-
-
-struct extrato {
-    char data[11];
-    double valor;
-    char desc[50];
-};
-
 struct usuario {
     char cpf[12];  
     char senha[20]; 
@@ -39,7 +31,8 @@ struct usuario {
 // struct extrato extrato1 = {"24/09/2024", 100.50, "Comra no supermercado"};
 
 
-void passarSenha(const char* senAcesso);
+void passarSenha(const char* senUser, const char* CPF);
+
 
 int main() {
 
@@ -68,7 +61,7 @@ int main() {
 
 
         printf("Digite o CPF: ");
-        scanf("%11s", s_cpf);  // 
+        scanf("%11s", s_cpf);  
         printf("Digite a senha: ");
         scanf("%19s", s_sen);   
 
@@ -84,16 +77,19 @@ int main() {
             printf("Login efetuado com sucesso\n");
 
             while (true) {
+                const char* CPF = s_cpf;
                 const char* senUser = s_sen;
-                passarSenha(senUser);
-                menu(s_sen);
+                const char* cpf = s_cpf;
+                passarSenha(senUser, CPF);
+                menu();
+
                 int op;
                 printf("Digite sua opcao: ");
                 scanf(" %d", &op);
                 if (op == 1) {
                     um();
                 } else if (op == 2) {
-                    dois();
+                    lerExt(cpf);
                 } else if (op == 3) {
                     tres();
                 } else if (op == 4) {

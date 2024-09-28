@@ -10,7 +10,7 @@ void cinco();
 
 void seis();
 
-void dois();
+void lerExt(const char* cpf);
 
 void sete();
 
