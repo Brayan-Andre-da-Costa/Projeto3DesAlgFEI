@@ -23,11 +23,11 @@ Código para compilação:
    g) Atualizar criptomoedas
    h) Sair
    
-3. Consultar saldo disponliza a carteira atual do usuário, entre elas, Reais, Bitcoin, Ethereum e Riple.
+3. Consultar saldo disponibiliza a carteira atual do usuário, entre elas, Reais, Bitcoin, Ethereum e Riple.
 
 4. Consultar Extrato mostrará todas as ultimas 100 transações do usuário.
 
-5. Ao selecionar Depositar, é solicitado ao usuário o valor que deseja depoistar, atualizando sua carteira.
+5. Ao selecionar Depositar, é solicitado ao usuário o valor que deseja depositar, atualizando sua carteira.
 
 6. Ao selecionar Sacar, é solicitado ao usuário o valor a ser sacado, e sua senha de acesso.
 
@@ -42,5 +42,5 @@ Código para compilação:
 # Lista de Participantes
 
 1. Brayan André da Costa. RA 22.124.017-9
-2. João Vito Rangel Maciente. RA: 22.124.017-9
+2. João Vitor Rangel Maciente. RA: 22.124.017-9
 
