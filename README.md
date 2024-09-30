@@ -14,14 +14,14 @@ Código para compilação:
 
 2. Ao entrar, é disponibilizado um menu denotando todas possibilidades que existem dentro da exchange.
 
-- Consultar saldo 
-- Consultar Extrato 
-- Depositar 
-- Sacar 
-- Comprar Criptomoedas 
-- Vender Criptomoedas 
-- Atualizar criptomoedas 
-- Sair
+  - Consultar saldo 
+  - Consultar Extrato 
+  - Depositar 
+  - Sacar 
+  - Comprar Criptomoedas 
+  - Vender Criptomoedas 
+  - Atualizar criptomoedas 
+  - Sair
 
 3. Consultar saldo disponibiliza a carteira atual do usuário, entre elas, Reais, Bitcoin, Ethereum e Riple.
 
@@ -41,5 +41,5 @@ Código para compilação:
 
 # Lista de Participantes
 
-Brayan André da Costa. RA 22.124.017-9
-João Vitor Rangel Maciente. RA: 22.124.017-9
+- Brayan André da Costa. RA 22.124.017-9
+- João Vitor Rangel Maciente. RA: 22.124.017-9
