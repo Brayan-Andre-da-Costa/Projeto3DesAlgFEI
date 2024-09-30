@@ -4,25 +4,24 @@ O Projeto consiste em criar uma exchange de Criptomoeda em linguagem C, a qual d
 
 A compilaçãp do arquivo está situada somente no projeto.c, a qual importa as funções de outro arquivo a partir de método #include "funcoes.h"
 
-# Código para compilação:
+Código para compilação:
+-> gcc projeto.c funcoes.c -o projeto
+-> /projeto
 
-gcc projeto.c funcoes.c -o projeto
-./projeto
-
-#Forma de Uso
+# Forma de Uso
 
 1. Ao compilar o arquivo, o usuário deve colocar o seu CPF e senha CORRETOS.
 
 2. Ao entrar, é disponibilizado um menu denotando todas possibilidades que existem dentro da exchange.
 
-a) Consultar saldo 
-b) Consultar Extrato 
-c) Depositar 
-d) Sacar 
-e) Comprar Criptomoedas 
-f) Vender Criptomoedas 
-g) Atualizar criptomoedas 
-h) Sair
+- Consultar saldo 
+- Consultar Extrato 
+- Depositar 
+- Sacar 
+- Comprar Criptomoedas 
+- Vender Criptomoedas 
+- Atualizar criptomoedas 
+- Sair
 
 3. Consultar saldo disponibiliza a carteira atual do usuário, entre elas, Reais, Bitcoin, Ethereum e Riple.
 
