@@ -92,8 +92,6 @@ void load_carteira(const char* cpf){
     fread(&carteira, sizeof(Saldos), 1, file);
 
     fclose(file);
-
-    printf("arquivo carregado");
 }
 
 
