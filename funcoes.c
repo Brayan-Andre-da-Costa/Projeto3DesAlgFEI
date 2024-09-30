@@ -6,16 +6,36 @@
 #include <time.h>
 //VARIAVEIS GLOBAIS
 
+typedef struct{
+    float real;
+    float bitcoin;
+    float ethereum;
+    float ripple;
+} Saldos;
+
+Saldos carteira = {0,0,0,0};
+
 int dia, mes, ano;
 char senA;
+
+//validação/identificação
 
 char senUser[12];
 char senha[12];
 char cpf[12];
 
+//variaveis para extrato
+
 double valorExt;
 char dataExt[11];
 char descExt[50];
+
+//variaveis para carteira
+
+double cReal;
+double cBit;
+double cEthe;
+double cRipp;
 
 // ----------------------------------------------------------------------------------------
 // FUNÇÃO PASSAR SENHA e CPF DO USUARIO DE ARQUIVO PROJETO PARA FUNCOES
@@ -37,6 +57,45 @@ void pegarData(int *dia, int *mes){
     *dia = dataA->tm_mday - 1;
     *mes = dataA->tm_mon + 1;    
 }
+
+// ----------------------------------------------------------------------------------------
+// FUNÇÃO SALVAR CARTEIRA DO USUARIO
+
+void save_carteira(const char* cpf){
+
+    char nome_arq_c[50];
+    snprintf(nome_arq_c, sizeof(nome_arq_c), "%s_carteira.bin", cpf);
+
+    FILE *file = fopen(nome_arq_c,"wb");
+    if (file == NULL){
+        printf("Erro ao abrir o arquivo\n");
+        return;
+    } 
+
+    fwrite(&carteira, sizeof(Saldos), 1, file);
+
+    fclose(file);
+}
+// ----------------------------------------------------------------------------------------
+// FUNÇÃO LER O FILE CARTEIRA E RESTABELECER OS VALORES
+
+void load_carteira(const char* cpf){
+
+    char nome_arq_c[50];
+    snprintf(nome_arq_c, sizeof(nome_arq_c), "%s_carteira.bin", cpf);
+
+    FILE *file = fopen(nome_arq_c, "rb");
+    if (file == NULL){
+        printf("Erro ao carregar o arquivo\n");
+        return;
+    }
+    fread(&carteira, sizeof(Saldos), 1, file);
+
+    fclose(file);
+
+    printf("arquivo carregado");
+}
+
 
 // ----------------------------------------------------------------------------------------
 // FUNÇÃO SALVAR EXTRATO
@@ -67,7 +126,6 @@ void save_extrato(const char* cpf, const char* dataExt, double valorExt, const c
     fwrite(&e, sizeof(struct extrato), 1, file);
 
     fclose(file);
-    printf("Extrato salvo com sucesso");
 }
 
 // ----------------------------------------------------------------------------------------
@@ -82,7 +140,8 @@ void lerExt(const char* cpf){
 
     FILE *file = fopen(nome_arq, "rb");
     if (file == NULL){
-        printf("Erro ao abrir o arquivo\n");
+        printf("Ainda não há extrato em sua conta!\n");
+        return;
     } 
 
     //calcula a qtd de extrato no arquivo - end - size - cal 
@@ -131,15 +190,6 @@ void menu(){
 
 // ----------------------------------------------------------------------------------------
 // FUNÇÃO SALDO
-
-typedef struct{
-    float real;
-    float bitcoin;
-    float ethereum;
-    float ripple;
-} Saldos;
-
-Saldos carteira = {0,0,0,0};
 
 void um(){
     printf("***********************************************************************\n");
@@ -288,7 +338,7 @@ void cinco(){
                     carteira.ethereum += criptoC;
                     printf("Total de Ethereums em sua carteira: %.4f\n", carteira.ethereum);
                     valorExt = criptoC;
-                    sprintf(descExt,"Compra de Ethereuum.");
+                    sprintf(descExt,"Compra de Ethereum.");
                     save_extrato(cpf, dataExt, valorExt, descExt);
                 }
             }
@@ -419,6 +469,9 @@ void seis(){
                     carteira.real += totct;
                     carteira.ethereum -= qtdC;
                     printf("Total de Ethereum em sua carteira: %.4f\n", carteira.ethereum);
+                    valorExt = qtdC;
+                    sprintf(descExt,"Venda de Ethereum.");
+                    save_extrato(cpf, dataExt, valorExt, descExt);
                 }
             }
             else{

@@ -12,26 +12,11 @@ struct usuario {
     char senha[20]; 
 };
 
-// void creat_ext(struct usuario u, struct extrato e){
-//     char name_arq[50];
-
-//     snprintf(name_arq, sizeof(name_arq), "%s_extrato.bin", u.cpf);
-
-//     FILE *file = fopen(name_arq, "ab");
-//     if (file == NULL){
-//         printf("erro ao abrir o arquivo");
-//         return;
-//     }
-
-//     fwrite(&e, sizeof(struct extrato), 1, file);
-
-//     fclose(file);
-// }
-
-// struct extrato extrato1 = {"24/09/2024", 100.50, "Comra no supermercado"};
-
-
 void passarSenha(const char* senUser, const char* CPF);
+
+void save_carteira(const char* cpf);
+
+void load_carteira(const char* cpf);
 
 
 int main() {
@@ -45,7 +30,7 @@ int main() {
     {"47143409834", "seqwa123"},
     {"47147609887", "s1n0a123"},
     {"47143423674", "senhanr3"},
-    {"47143409856", "seqfa123"},
+    {"43138734812", "rafa0702"},
     {"47143409834", "wrna123"}
     };
     
@@ -75,12 +60,13 @@ int main() {
 
         if (encontrado) {
             printf("Login efetuado com sucesso\n");
-
+            const char* cpf = s_cpf;
+            load_carteira(cpf);
             while (true) {
                 const char* CPF = s_cpf;
                 const char* senUser = s_sen;
-                const char* cpf = s_cpf;
                 passarSenha(senUser, CPF);
+                save_carteira(cpf);
                 menu();
 
                 int op;
