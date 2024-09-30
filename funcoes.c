@@ -542,7 +542,6 @@ void sete(){
         float variacao_rip =  (rand()% 101 - 50) / 1000.00;
 
         //att cotação bitcoin
-        printf("printf");
         printf("Valor anterior a atualização: %.2f \n", valoresC.v_bit);
         atualizarValor(&valoresC.v_bit, &variacao_bit);
         printf("Atualização da cotação do bitcoin: %.2f\n", valoresC.v_bit);
@@ -552,14 +551,14 @@ void sete(){
         //att cotação ethereum
         printf("Valor anterior a atualização: %.2f \n", valoresC.v_eth);
         atualizarValor(&valoresC.v_eth, &variacao_eth);
-        printf("Atualização da cotação do bitcoin: %.2f\n", valoresC.v_eth);
+        printf("Atualização da cotação do Ethereum: %.2f\n", valoresC.v_eth);
         printf("variação: %.3f\n", variacao_eth);
         printf("***********************************************************************\n");
 
         //att cotação riple
         printf("Valor anterior a atualização: %.2f \n", valoresC.v_rip);
         atualizarValor(&valoresC.v_rip, &variacao_rip);
-        printf("Atualização da cotação do bitcoin: %.2f\n", valoresC.v_rip);
+        printf("Atualização da cotação do Ripple: %.2f\n", valoresC.v_rip);
         printf("variação: %.3f\n", variacao_rip);
 
     }
