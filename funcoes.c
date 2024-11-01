@@ -58,8 +58,24 @@ void pegarData(int *dia, int *mes){
     *mes = dataA->tm_mon + 1;    
 }
 
+void cadUsuario(char nCad, char cpfCad, char senCad){
+
+    FILE *file = fopen("usarios.txt","a");
+    if (file == NULL){
+        printf("Erro ao abrir o arquivo\n");
+        return;
+    } 
+
+    fprintf(file, "Nome: %s\n",  &nCad);
+    fprintf(file, "CPF: %s\n",     &cpfCad);
+    fprintf(file, "Senha: %s\n", &senCad);
+    printf("---------------------------------\n");
+
+    fclose(file);
+}
 // ----------------------------------------------------------------------------------------
 // FUNÇÃO SALVAR CARTEIRA DO USUARIO
+
 
 void save_carteira(const char* cpf){
 

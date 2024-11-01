@@ -14,3 +14,5 @@ void lerExt(const char* cpf);
 
 void sete();
 
+void cadUsuario();
+

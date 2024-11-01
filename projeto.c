@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "funcoes.h"
+#include <ctype.h>
 
 #define NUM_USUARIO 10
 #define NUM_EXTRATO 100
@@ -43,6 +44,42 @@ int main() {
         char s_cpf[12];
         char s_sen[20];  
         char senAcesso[12];
+        char entrar;
+        char nCad;
+        char cpfCad;
+        char senCad;
+
+
+        printf("Você ja possui uma conta?(S/N) ");
+        scanf(" %c", &entrar);
+        if (toupper(entrar) == 'N'){
+            printf("Você deseja fazer um cadastro(S/N)? ");
+            scanf(" %c", &entrar);
+            if (toupper(entrar) == 'N'){
+                printf("Tudo bem, saindo...\n");
+                return 1;
+            }
+            printf("Digite seu nome: ");
+            scanf(" %s", &nCad);
+            printf("Digite seu CPF: ");
+            scanf(" %s", &cpfCad);
+            printf("Digite sua senha: ");
+            scanf(" %s", &senCad);
+            cadUsuario();
+            return 1;
+            
+
+
+
+
+        }
+        if (toupper(entrar) != 'N' && toupper(entrar) != 'S' ){
+            printf("Essa opção não existe\n");
+            return 1;
+
+        }
+
+
 
 
         printf("Digite o CPF: ");
