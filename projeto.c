@@ -41,13 +41,13 @@ int main() {
         //     creat_ext(Usuarios[i], extrato1);
         // }
 
-        char s_cpf[12];
-        char s_sen[20];  
+        char s_cpf[11];
+        char s_sen[9];  
         char senAcesso[12];
         char entrar;
-        char nCad;
-        char cpfCad;
-        char senCad;
+        char nCad[50];
+        char cpfCad[11];
+        char senCad[19];
 
 
         printf("Você ja possui uma conta?(S/N) ");
@@ -60,12 +60,16 @@ int main() {
                 return 1;
             }
             printf("Digite seu nome: ");
-            scanf(" %s", &nCad);
+            scanf(" %s", nCad);
             printf("Digite seu CPF: ");
-            scanf(" %s", &cpfCad);
+            scanf(" %s", cpfCad);
             printf("Digite sua senha: ");
-            scanf(" %s", &senCad);
-            cadUsuario();
+            scanf(" %s", senCad);
+            if(login(cpfCad, senCad, "usuarios.txt")){
+                printf("Usuario ja cadastrado\n");
+                return 0;
+            }
+            cadUsuario(nCad, cpfCad, senCad);
             return 1;
             
 
@@ -88,13 +92,12 @@ int main() {
         scanf("%19s", s_sen);   
 
         int encontrado = 0;
-        for (int i = 0; i < NUM_USUARIO; i++) {
-            if (strcmp(Usuarios[i].cpf, s_cpf) == 0 && strcmp(Usuarios[i].senha, s_sen) == 0) {
-                encontrado = 1;
-                break;
-            }
+        if(login(s_cpf, s_sen, "usuarios.txt")){
+            encontrado = 1;
         }
-
+        else{
+            printf("CPF ou senha Incorretos\n");
+        }
         if (encontrado) {
             printf("Login efetuado com sucesso\n");
             const char* cpf = s_cpf;

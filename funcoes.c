@@ -24,6 +24,11 @@ char senUser[12];
 char senha[12];
 char cpf[12];
 
+// login/verificaCad
+
+char cpf_a[11];
+char sen_a[9];
+
 //variaveis para extrato
 
 double valorExt;
@@ -36,6 +41,55 @@ double cReal;
 double cBit;
 double cEthe;
 double cRipp;
+// ----------------------------------------------------------------------------------------
+// LOGIN
+
+// criar uma variavel para armazenar o valor de 1 e 2 e enviar ao login, assim caso o valor seja 1,
+// a funcao tentara fazer um login, caso seja 2, fara uma verificao de usuario ja cadastrado
+
+int login(const char* cpf_digitado, const char* senha_digitado, const char* arquivo){
+
+    FILE *file = fopen(arquivo,"r"); 
+
+    if(file == NULL){
+        perror("Erro ao acessar o usuarios\n");
+        return 0;
+    }
+
+
+    while (fscanf(file, "%s %s", cpf_a, sen_a)==2){
+        if(strcmp(cpf_a, cpf_digitado) == 0 && strcmp(sen_a, senha_digitado) == 0){
+            fclose(file);
+            printf("Usuario ja cadastrado");
+            return 0;
+        }
+    }
+    fclose(file);
+    return 1;
+}
+// ----------------------------------------------------------------------------------------
+// Verificação de cadastro
+
+int verificaCad(const char* cpf_digitado, const char* senha_digitado, const char* arquivo){
+
+    FILE *file = fopen(arquivo,"r"); 
+
+    if(file == NULL){
+        perror("Erro ao acessar o usuarios\n");
+        return 0;
+    }
+
+    while (fscanf(file, "%s %s", cpf_a, sen_a)==2){
+        if(strcmp(cpf_a, cpf_digitado) == 0 && strcmp(sen_a, senha_digitado) == 0){
+            fclose(file);
+            return 1;
+        }
+    }
+    fclose(file);
+    return 0;
+}
+
+
 
 // ----------------------------------------------------------------------------------------
 // FUNÇÃO PASSAR SENHA e CPF DO USUARIO DE ARQUIVO PROJETO PARA FUNCOES
@@ -58,20 +112,18 @@ void pegarData(int *dia, int *mes){
     *mes = dataA->tm_mon + 1;    
 }
 
-void cadUsuario(char nCad, char cpfCad, char senCad){
+void cadUsuario(char *nCad, char *cpfCad, char *senCad){
 
-    FILE *file = fopen("usarios.txt","a");
+    FILE *file = fopen("usuarios.txt","a");
     if (file == NULL){
         printf("Erro ao abrir o arquivo\n");
         return;
     } 
 
-    fprintf(file, "Nome: %s\n",  &nCad);
-    fprintf(file, "CPF: %s\n",     &cpfCad);
-    fprintf(file, "Senha: %s\n", &senCad);
-    printf("---------------------------------\n");
+    fprintf(file, "CPF: %s SENHA: %s NOME: %s\n", cpfCad, senCad, nCad);
 
     fclose(file);
+    printf("Cadastro efuatado com sucesso! \n");
 }
 // ----------------------------------------------------------------------------------------
 // FUNÇÃO SALVAR CARTEIRA DO USUARIO
