@@ -26,7 +26,7 @@ char cpf[12];
 
 // login/verificaCad
 
-char cpf_a[11];
+char cpf_a[12];
 char sen_a[9];
 
 //variaveis para extrato
@@ -60,31 +60,35 @@ int login(const char* cpf_digitado, const char* senha_digitado, const char* arqu
     while (fscanf(file, "%s %s", cpf_a, sen_a)==2){
         if(strcmp(cpf_a, cpf_digitado) == 0 && strcmp(sen_a, senha_digitado) == 0){
             fclose(file);
-            printf("Usuario ja cadastrado");
+            printf("Login Efetuado com Sucesso.\n");
             return 0;
         }
     }
     fclose(file);
     return 1;
-}
+} 
 // ----------------------------------------------------------------------------------------
 // Verificação de cadastro
 
-int verificaCad(const char* cpf_digitado, const char* senha_digitado, const char* arquivo){
+int verificaCad(const char* cpf_digitado){
 
-    FILE *file = fopen(arquivo,"r"); 
+    FILE *file = fopen("usuarios.txt","r"); 
 
     if(file == NULL){
         perror("Erro ao acessar o usuarios\n");
         return 0;
     }
 
-    while (fscanf(file, "%s %s", cpf_a, sen_a)==2){
-        if(strcmp(cpf_a, cpf_digitado) == 0 && strcmp(sen_a, senha_digitado) == 0){
+    // Loop para ler cada linha do arquivo e verificar se o CPF já existe
+    while (fscanf(file, "%s %s", cpf_a, sen_a) == 2) {
+        if (strcmp(cpf_a, cpf_digitado) == 0) {
+            // Se o CPF já existe no arquivo, retorna 1
             fclose(file);
+            printf("Usuário já cadastrado.\n");
             return 1;
         }
     }
+    printf("p\n");
     fclose(file);
     return 0;
 }
@@ -123,7 +127,7 @@ void cadUsuario(char *nCad, char *cpfCad, char *senCad){
     fprintf(file, "CPF: %s SENHA: %s NOME: %s\n", cpfCad, senCad, nCad);
 
     fclose(file);
-    printf("Cadastro efuatado com sucesso! \n");
+    printf("Cadastro efetuado com sucesso! \n");
 }
 // ----------------------------------------------------------------------------------------
 // FUNÇÃO SALVAR CARTEIRA DO USUARIO

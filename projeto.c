@@ -46,7 +46,7 @@ int main() {
         char senAcesso[12];
         char entrar;
         char nCad[50];
-        char cpfCad[11];
+        char cpfCad[12];
         char senCad[19];
 
 
@@ -65,12 +65,15 @@ int main() {
             scanf(" %s", cpfCad);
             printf("Digite sua senha: ");
             scanf(" %s", senCad);
-            if(login(cpfCad, senCad, "usuarios.txt")){
+
+            if(verificaCad(cpfCad)){
                 printf("Usuario ja cadastrado\n");
-                return 0;
+                return 1;
             }
             cadUsuario(nCad, cpfCad, senCad);
             return 1;
+          
+
             
 
 
