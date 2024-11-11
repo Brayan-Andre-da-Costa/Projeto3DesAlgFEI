@@ -37,10 +37,6 @@ int main() {
     
     while (true) {
 
-        // for (int i = 0; i < NUM_USUARIO; i++) {
-        //     creat_ext(Usuarios[i], extrato1);
-        // }
-
         char s_cpf[11];
         char s_sen[9];  
         char senAcesso[12];
@@ -52,6 +48,9 @@ int main() {
 
         printf("Você ja possui uma conta?(S/N) ");
         scanf(" %c", &entrar);
+
+        //CADASTRAR USUARIO
+    
         if (toupper(entrar) == 'N'){
             printf("Você deseja fazer um cadastro(S/N)? ");
             scanf(" %c", &entrar);
@@ -72,21 +71,23 @@ int main() {
             }
             cadUsuario(nCad, cpfCad, senCad);
             return 1;
-          
+        }
+        //ACESSO ADM
+
+        if (toupper(entrar) == 'D'){
+            printf("Acesso Restrito!!! Digite a senha de acesso: ");
+            char acesso[9];
+            scanf(" %s", acesso);
+            if (strcmp(acesso, "FEI2024") != 0){
+                return 1;
+            }
+            printf("Bem-vindo! Aqui estão suas opções\n");
+            menu2();
+            return 1;
+        }
 
             
-
-
-
-
-        }
-        if (toupper(entrar) != 'N' && toupper(entrar) != 'S' ){
-            printf("Essa opção não existe\n");
-            return 1;
-
-        }
-
-
+        //INICIAR LOGIN
 
 
         printf("Digite o CPF: ");
@@ -98,9 +99,7 @@ int main() {
         if(login(s_cpf, s_sen, "usuarios.txt")){
             encontrado = 1;
         }
-        else{
-            printf("CPF ou senha Incorretos\n");
-        }
+
         if (encontrado) {
             printf("Login efetuado com sucesso\n");
             const char* cpf = s_cpf;
@@ -138,9 +137,9 @@ int main() {
             break;  
         } 
         else {
-            printf("Usuario inexistente\n");
-        }       
-    }
+            printf("CPF/Senha incorretor\n");
+        }      
 
-    return 0;  
+    return 0;
+    }
 }

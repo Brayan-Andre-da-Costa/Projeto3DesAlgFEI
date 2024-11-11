@@ -1,5 +1,7 @@
 void menu();
 
+void menu2();
+
 float um();
 
 void tres();

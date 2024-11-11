@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 //VARIAVEIS GLOBAIS
 
 typedef struct{
@@ -52,7 +53,7 @@ int login(const char* cpf_digitado, const char* senha_digitado, const char* arqu
     FILE *file = fopen(arquivo,"r"); 
 
     if(file == NULL){
-        perror("Erro ao acessar o usuarios\n");
+        printf("Erro ao acessar o usuarios\n");
         return 0;
     }
 
@@ -61,11 +62,11 @@ int login(const char* cpf_digitado, const char* senha_digitado, const char* arqu
         if(strcmp(cpf_a, cpf_digitado) == 0 && strcmp(sen_a, senha_digitado) == 0){
             fclose(file);
             printf("Login Efetuado com Sucesso.\n");
-            return 0;
+            return 1;
         }
     }
     fclose(file);
-    return 1;
+    return 0;
 } 
 // ----------------------------------------------------------------------------------------
 // Verificação de cadastro
@@ -80,15 +81,13 @@ int verificaCad(const char* cpf_digitado){
     }
 
     // Loop para ler cada linha do arquivo e verificar se o CPF já existe
-    while (fscanf(file, "%s %s", cpf_a, sen_a) == 2) {
+    while (fscanf(file, "%s", cpf_a) == 1) {
         if (strcmp(cpf_a, cpf_digitado) == 0) {
             // Se o CPF já existe no arquivo, retorna 1
             fclose(file);
-            printf("Usuário já cadastrado.\n");
             return 1;
         }
     }
-    printf("p\n");
     fclose(file);
     return 0;
 }
@@ -158,8 +157,20 @@ void load_carteira(const char* cpf){
 
     FILE *file = fopen(nome_arq_c, "rb");
     if (file == NULL){
-        printf("Erro ao carregar o arquivo\n");
+        printf("Bem-vindo novo Investidor! Criando sua carteira em\n");
+        //temporizador
+        int t = 5; 
+
+        while (t > 0) {
+            sleep(1);             
+            for (int i = 0; i < t; i++) {
+                printf("."); 
+            }
+            printf("\n"); 
+            t--; 
+        }
         return;
+
     }
     fread(&carteira, sizeof(Saldos), 1, file);
 
@@ -256,6 +267,16 @@ void menu(){
     printf("8 - Sair\n");
     pegarData(&dia, &mes);
     sprintf(dataExt," %02d/%02d\n", dia, mes);
+}
+
+void menu2(){
+    printf("***********************************************************************\n");
+    printf("1 - Excluir Investidor\n");
+    printf("2 - Cadastrar Criptomoeda\n");
+    printf("3 - Excluir Critomoeda\n");
+    printf("4 - Consultar Saldo de um Investidor\n");
+    printf("5 - Consultar Extrato de um Investidor\n");
+    printf("6 - Atualizar a Cotação de Criptomoedas\n");
 }
 
 // ----------------------------------------------------------------------------------------
