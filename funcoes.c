@@ -66,6 +66,7 @@ int login(const char* cpf_digitado, const char* senha_digitado, const char* arqu
         }
     }
     fclose(file);
+
     return 0;
 } 
 // ----------------------------------------------------------------------------------------
@@ -80,10 +81,10 @@ int verificaCad(const char* cpf_digitado){
         return 0;
     }
 
-    // Loop para ler cada linha do arquivo e verificar se o CPF já existe
+    
     while (fscanf(file, "%s", cpf_a) == 1) {
         if (strcmp(cpf_a, cpf_digitado) == 0) {
-            // Se o CPF já existe no arquivo, retorna 1
+            
             fclose(file);
             return 1;
         }
@@ -123,7 +124,7 @@ void cadUsuario(char *nCad, char *cpfCad, char *senCad){
         return;
     } 
 
-    fprintf(file, "CPF: %s SENHA: %s NOME: %s\n", cpfCad, senCad, nCad);
+    fprintf(file, "%s %s %s\n", cpfCad, senCad, nCad);
 
     fclose(file);
     printf("Cadastro efetuado com sucesso! \n");
@@ -271,12 +272,14 @@ void menu(){
 
 void menu2(){
     printf("***********************************************************************\n");
-    printf("1 - Excluir Investidor\n");
-    printf("2 - Cadastrar Criptomoeda\n");
-    printf("3 - Excluir Critomoeda\n");
-    printf("4 - Consultar Saldo de um Investidor\n");
-    printf("5 - Consultar Extrato de um Investidor\n");
-    printf("6 - Atualizar a Cotação de Criptomoedas\n");
+    printf("1 - Cadastrar Investidor\n");
+    printf("2 - Excluir Investidor\n");
+    printf("3 - Cadastrar Criptomoeda\n");
+    printf("4 - Excluir Critomoeda\n");
+    printf("5 - Consultar Saldo de um Investidor\n");
+    printf("6 - Consultar Extrato de um Investidor\n");
+    printf("7 - Atualizar a Cotação de Criptomoedas\n");
+    printf(" \n");
 }
 
 // ----------------------------------------------------------------------------------------

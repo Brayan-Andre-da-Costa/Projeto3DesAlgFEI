@@ -40,53 +40,7 @@ int main() {
         char s_cpf[11];
         char s_sen[9];  
         char senAcesso[12];
-        char entrar;
-        char nCad[50];
-        char cpfCad[12];
-        char senCad[19];
-
-
-        printf("Você ja possui uma conta?(S/N) ");
-        scanf(" %c", &entrar);
-
-        //CADASTRAR USUARIO
-    
-        if (toupper(entrar) == 'N'){
-            printf("Você deseja fazer um cadastro(S/N)? ");
-            scanf(" %c", &entrar);
-            if (toupper(entrar) == 'N'){
-                printf("Tudo bem, saindo...\n");
-                return 1;
-            }
-            printf("Digite seu nome: ");
-            scanf(" %s", nCad);
-            printf("Digite seu CPF: ");
-            scanf(" %s", cpfCad);
-            printf("Digite sua senha: ");
-            scanf(" %s", senCad);
-
-            if(verificaCad(cpfCad)){
-                printf("Usuario ja cadastrado\n");
-                return 1;
-            }
-            cadUsuario(nCad, cpfCad, senCad);
-            return 1;
-        }
-        //ACESSO ADM
-
-        if (toupper(entrar) == 'D'){
-            printf("Acesso Restrito!!! Digite a senha de acesso: ");
-            char acesso[9];
-            scanf(" %s", acesso);
-            if (strcmp(acesso, "FEI2024") != 0){
-                return 1;
-            }
-            printf("Bem-vindo! Aqui estão suas opções\n");
-            menu2();
-            return 1;
-        }
-
-            
+           
         //INICIAR LOGIN
 
 
@@ -137,7 +91,7 @@ int main() {
             break;  
         } 
         else {
-            printf("CPF/Senha incorretor\n");
+            printf("CPF/Senha incorreto\n");
         }      
 
     return 0;
