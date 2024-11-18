@@ -21,19 +21,6 @@ void load_carteira(const char* cpf);
 
 
 int main() {
-
-    struct usuario Usuarios[NUM_USUARIO] = {
-    {"47169633817", "garro10"},
-    {"47143403454", "senha143"},
-    {"47143409804", "brayan12"},
-    {"47143408904", "se22a123"},
-    {"47144509564", "senhqwr3"},
-    {"47143409834", "seqwa123"},
-    {"47147609887", "s1n0a123"},
-    {"47143423674", "senhanr3"},
-    {"43138734812", "rafa0702"},
-    {"47143409834", "wrna123"}
-    };
     
     while (true) {
 
@@ -55,7 +42,6 @@ int main() {
         }
 
         if (encontrado) {
-            printf("Login efetuado com sucesso\n");
             const char* cpf = s_cpf;
             load_carteira(cpf);
             while (true) {

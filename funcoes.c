@@ -42,33 +42,291 @@ double cReal;
 double cBit;
 double cEthe;
 double cRipp;
-// ----------------------------------------------------------------------------------------
-// LOGIN
 
-// criar uma variavel para armazenar o valor de 1 e 2 e enviar ao login, assim caso o valor seja 1,
-// a funcao tentara fazer um login, caso seja 2, fara uma verificao de usuario ja cadastrado
+//login ADM
 
-int login(const char* cpf_digitado, const char* senha_digitado, const char* arquivo){
+int loginADM(const char* cpf_digitado, const char* senha_digitado, const char* arquivo) {
+    FILE *file = fopen(arquivo, "r");
 
-    FILE *file = fopen(arquivo,"r"); 
-
-    if(file == NULL){
-        printf("Erro ao acessar o usuarios\n");
+    if (file == NULL) {
+        printf("Erro ao acessar os usuarios\n");
         return 0;
     }
 
-
-    while (fscanf(file, "%s %s", cpf_a, sen_a)==2){
-        if(strcmp(cpf_a, cpf_digitado) == 0 && strcmp(sen_a, senha_digitado) == 0){
+    char cpf_a[20], sen_a[20], nome_a[50];
+    
+    // Lê linha por linha
+    while (fscanf(file, "%s %s", cpf_a, sen_a) == 2) {
+        // Compara o CPF e a senha digitados com os armazenados no arquivo
+        if (strcmp(cpf_a, cpf_digitado) == 0 && strcmp(sen_a, senha_digitado) == 0) {
             fclose(file);
             printf("Login Efetuado com Sucesso.\n");
             return 1;
         }
     }
+
+    fclose(file);
+    printf("CPF ou senha incorretos.\n");
+    return 0;
+}
+
+// atulizar os valores randomicos
+//--------------------------------------------------------------------------------
+void atualizarValor(float* valor, float variacao) {
+    *valor = *valor * (1.0 + variacao);
+}
+
+
+//ATUALIZAR COTAÇÕES ADM
+//------------------------------------------------------------------
+void attCotacao() {
+    char verificar;
+    printf("Deseja atualizar a cotação de todas as criptomoedas? (S/N): ");
+    scanf(" %c", &verificar);
+
+    if (toupper(verificar) == 'S') {
+        srand(time(NULL));
+
+        FILE *file = fopen("criptos.txt", "r");
+        if (file == NULL) {
+            printf("Erro ao abrir o arquivo criptos.txt para leitura!\n");
+            return;
+        }
+
+        // Criar um arquivo temporário para armazenar os dados atualizados
+        FILE *tempFile = fopen("cripto_temp.txt", "w");
+        if (tempFile == NULL) {
+            printf("Erro ao criar o arquivo temporário!\n");
+            fclose(file);
+            return;
+        }
+
+        char nome[50];
+        float cotacao, taxaCompra, taxaVenda;
+        while (fscanf(file, "%s %f %f %f", nome, &cotacao, &taxaCompra, &taxaVenda) == 4) {
+            // Gerar uma variação aleatória para cada criptomoeda
+            float variacao = (rand() % 101 - 50) / 1000.0; // Variação entre -5% e +5%
+            printf("****************************************************\n");
+            printf("Atualizando %s:\n", nome);
+            printf("  Valor anterior: %.2f\n", cotacao);
+            atualizarValor(&cotacao, variacao);
+            printf("  Novo valor: %.2f (Variação: %.3f)\n", cotacao, variacao);
+
+            // Escrever os dados atualizados no arquivo temporário
+            fprintf(tempFile, "%s %.2f %.4f %.4f\n", nome, cotacao, taxaCompra, taxaVenda);
+        }
+
+        fclose(file);
+        fclose(tempFile);
+
+        // Substituir o arq original pelo temporario
+        remove("criptos.txt");
+        rename("cripto_temp.txt", "criptos.txt");
+
+        printf("Cotações atualizadas com sucesso!\n");
+    } else {
+        printf("Cotações não alteradas.\n");
+    }
+}
+// ----------------------------------------------------------------------------------------
+// EXCLUIR CRIPTO
+
+void excluirCripto(const char* nomeC ){
+    char criptoArq[] = "criptos.txt";
+    char linha[200];
+    char tempArq[] = "temp.txt" ;
+    int cont = 0;
+    int encontrado = 0;
+
+    // Excluir usuario no Banco de Dados
+
+    FILE* cripto = fopen(criptoArq, "r");
+    FILE* temp = fopen(tempArq, "w");
+
+    if (cripto == NULL || temp == NULL){
+        printf("Erro ao abrir os arquivos\n");
+        return;
+    }
+
+    while (fgets(linha, sizeof(linha), cripto) != NULL) {
+        if (strstr(linha, nomeC) == NULL) {
+            fputs(linha, temp); // copia as linha fora do alcance da cripto
+        } else {
+            encontrado = 1;
+        }
+    }
+
+    fclose(cripto);
+    fclose(temp);
+
+    if (encontrado){
+        remove(criptoArq);
+        rename(tempArq, criptoArq);
+        cont += 1;
+    }
+    else{
+        printf(" Cripto %s nao encontrado\n", nomeC);
+
+    }
+
+    if (cont == 1){
+        printf("Cripto Removida com sucesso\n");
+    }
+    else{
+        printf("Erro na remoção da cripto, por favor contatar o dev: (55) 40028922");
+    }
+
+}
+
+
+// ----------------------------------------------------------------------------------------
+// PEGAR DADOS DA CRIPTO
+
+void dadosCripto(const char* cripto){
+
+    FILE* file = fopen("criptos.txt", "r");
+
+    if (file == NULL){
+        perror("Arquivo Inexistente");
+    }
+    char nome[30];
+    float cotacao, taxaC, taxaV;
+    int encontrada = 0;
+
+    while (fscanf(file, "%s %f %f %f", nome, &cotacao, &taxaC, &taxaV) == 4) {
+        // Compara o CPF e a senha digitados com os armazenados no arquivo
+        if (strcmp(nome, cripto) == 0) {
+            printf("Nome: %s\n", nome);
+            printf("Cotação: %.4f\n", cotacao);
+            printf("Taxa de Compra: %.4f\n", taxaC);
+            printf("Taxa de Venda: %.4f\n", taxaV);           
+            encontrada = 1;
+        }
+    }
+    if (!encontrada){
+        printf("Cripto não encontrada\n");
+    }
+
     fclose(file);
 
+}
+
+// ----------------------------------------------------------------------------------------
+// LOGIN
+
+int login(const char* cpf_digitado, const char* senha_digitado, const char* arquivo) {
+    FILE *file = fopen(arquivo, "r");
+
+    if (file == NULL) {
+        printf("Erro ao acessar os usuarios\n");
+        return 0;
+    }
+
+    char cpf_a[20], sen_a[20], nome_a[50];
+    
+    // Lê linha por linha
+    while (fscanf(file, "%s %s %[^\n]", cpf_a, sen_a, nome_a) == 3) {
+        // Compara o CPF e a senha digitados com os armazenados no arquivo
+        if (strcmp(cpf_a, cpf_digitado) == 0 && strcmp(sen_a, senha_digitado) == 0) {
+            fclose(file);
+            printf("Login Efetuado com Sucesso.\n");
+            return 1;
+        }
+    }
+
+    fclose(file);
+    printf("CPF ou senha incorretos.\n");
     return 0;
-} 
+}
+
+// função de cadastrar criptomoedas
+//-----------------------------------------------------------------------------------------
+
+void CadCripto(const char* nomeC, float valorC, float taxaCC, float taxaVC){
+
+    FILE *file = fopen("criptos.txt","a");
+
+    if (file == NULL){
+        printf("Erro ao abrir o arquivo\n");
+        return;
+    } 
+
+
+    fprintf(file, "%s %f %f %f\n", nomeC, valorC, taxaCC, taxaVC);
+
+    fclose(file);
+    printf("Cadastro de cripto efetuado com sucesso! \n");
+}
+
+// função de excluir usuarios
+//-----------------------------------------------------------------------------------------
+
+void excluirUsuario(const char* cpf){
+    char cartArq[50];
+    char extArq[50];
+    char usuariosArq[] = "usuarios.txt";
+    char tempArq[] = "temp.txt";
+    char linha[200];
+    int encontrado = 0;
+
+    snprintf(cartArq, sizeof(cartArq), "%s_carteira.bin", cpf);
+    snprintf(extArq, sizeof(extArq), "%s_extrato.bin", cpf);
+
+    int cont = 0;
+    //Excluir aquivos
+
+    if (remove(cartArq) == 0) {
+        cont += 1;
+    } else {
+        printf("Erro ao remover o arquivo %s. Ele pode não existir.\n", cartArq);
+    }
+
+    if (remove(extArq) == 0) {
+        cont += 1;
+    } else {
+        printf("Erro ao remover o arquivo %s. Ele pode não existir.\n", extArq);
+    }
+
+    // Excluir usuario no Banco de Dados
+
+    FILE* usuarios = fopen(usuariosArq, "r");
+    FILE* temp = fopen(tempArq, "w");
+
+    if (usuarios == NULL || temp == NULL){
+        printf("Erro ao abrir os arquivos\n");
+        return;
+    }
+
+    while (fgets(linha, sizeof(linha), usuarios) != NULL) {
+        if (strstr(linha, cpf) == NULL) {
+            fputs(linha, temp); // copia as linha fora do alcance do cpf
+        } else {
+            encontrado = 1;
+        }
+    }
+
+    fclose(usuarios);
+    fclose(temp);
+
+    if (encontrado){
+        remove(usuariosArq);
+        rename(tempArq, usuariosArq);
+        cont += 1;
+    }
+    else{
+        printf(" Usuário %s nao encontrado\n", cpf);
+
+    }
+
+    if (cont == 3){
+        printf("Usuário Removido com sucesso\n");
+    }
+    else{
+        printf("Erro na remoção do usuário, por favor contatar o dev: (55) 40028922");
+    }
+
+}
+
 // ----------------------------------------------------------------------------------------
 // Verificação de cadastro
 
@@ -116,6 +374,36 @@ void pegarData(int *dia, int *mes){
     *mes = dataA->tm_mon + 1;    
 }
 
+void lerSaldo(const char* cpf){
+
+    char nome_arq_c[50];
+    Saldos carteira;
+
+    snprintf(nome_arq_c, sizeof(nome_arq_c), "%s_carteira.bin", cpf);
+
+    FILE *file = fopen(nome_arq_c,"rb");
+    if (file == NULL){
+        printf("Erro ao abrir o arquivo\n");
+        return;
+    }
+
+    if (fread(&carteira, sizeof(Saldos), 1, file) != 1) {
+        printf("Erro ao ler os dados da carteira para o CPF: %s\n", cpf);
+        fclose(file);
+        return;
+    }
+
+    fclose(file);
+
+    printf("Usuário/CPF %s:\n", cpf);
+    printf("Saldo em Reais: R$ %.2f\n", carteira.real);
+    printf("Saldo em Bitcoin: %.8f BTC\n", carteira.bitcoin);
+    printf("Saldo em Ripple: %.2f XRP\n", carteira.ripple);
+    printf("Saldo em Ethereum: %.8f ETH\n", carteira.ethereum);
+
+
+}
+
 void cadUsuario(char *nCad, char *cpfCad, char *senCad){
 
     FILE *file = fopen("usuarios.txt","a");
@@ -154,6 +442,7 @@ void save_carteira(const char* cpf){
 void load_carteira(const char* cpf){
 
     char nome_arq_c[50];
+
     snprintf(nome_arq_c, sizeof(nome_arq_c), "%s_carteira.bin", cpf);
 
     FILE *file = fopen(nome_arq_c, "rb");
@@ -279,6 +568,7 @@ void menu2(){
     printf("5 - Consultar Saldo de um Investidor\n");
     printf("6 - Consultar Extrato de um Investidor\n");
     printf("7 - Atualizar a Cotação de Criptomoedas\n");
+    printf("8 - Sair\n");
     printf(" \n");
 }
 
@@ -618,6 +908,7 @@ void seis(){
         printf("Criptomoeda nao encontrada!!!\n");
     }
 }
+
 // ----------------------------------------------------------------------------------------
 // ATUALIZAR COTAÇÃO
 void sete(){
