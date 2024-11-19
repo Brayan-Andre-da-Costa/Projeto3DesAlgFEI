@@ -1,41 +1,66 @@
-# Projeto 1 - Exchange Criptomoedas - FEI
+# Projeto 3 - Gestão de Investidores e Criptomoedas - FEI
 
-O Projeto consiste em criar uma exchange de Criptomoeda em linguagem C, a qual deverá ter funcões como: consulta de saldo e extrato, deposito, saque, compra, venda e atualizar a cotação das cirptomoedas.
+O Projeto consiste em ampliar as funcionalidades do Projeto 1, o sistema possibilita o gerenciamento de investidores e criptomoedas, permitindo o monitoramento e controle da realização de transações financeiras virtuais.
 
-A compilaçãp do arquivo está situada somente no projeto.c, a qual importa as funções de outro arquivo a partir de método #include "funcoes.h"
+A compilação do arquivo está situada somente no projeto.c e adm.c, a qual importa as funções de outro arquivo a partir de método #include "funcoes.h"
 
-Código para compilação:
--> gcc projeto.c funcoes.c -o projeto
--> /projeto
+Código para compilação do Investidor:
+-> gcc projeto.c funcoes.c -o main
+-> /main
 
-# Forma de Uso
+Código para compilação do Investidor:
+-> gcc adm.c funcoes.c -o projeto
+-> /main
 
-1. Ao compilar o arquivo, o usuário deve colocar o seu CPF e senha CORRETOS.
+# Forma de Uso do Gerente
+
+1. Ao compilar o arquivo, o Gerente deve colocar o seu CPF e senha CORRETOS.
 
 2. Ao entrar, é disponibilizado um menu denotando todas possibilidades que existem dentro da exchange.
 
-  - Consultar saldo 
-  - Consultar Extrato 
-  - Depositar 
-  - Sacar 
-  - Comprar Criptomoedas 
-  - Vender Criptomoedas 
-  - Atualizar criptomoedas 
+  - Cadastrar Investidor
+  - Excluir Investidor 
+  - Cadastro de Criptomoeda
+  - Excluir Criptomoeda
+  - Consultar Saldo do Investidor
+  - Consultar Extrato do Investidor
+  - Atualizar Criptomoedas 
   - Sair
 
-3. Consultar saldo disponibiliza a carteira atual do usuário, entre elas, Reais, Bitcoin, Ethereum e Riple.
+3. Cadastro de Investidor.
+   
+O gerente pode cadastrar um novo investidor informando os seguintes dados:
 
-4. Consultar Extrato mostrará todas as ultimas 100 transações do usuário.
+-Nome do investidor
+-CPF do investidor
+-Senha do investidor
 
-5. Ao selecionar Depositar, é solicitado ao usuário o valor que deseja depositar, atualizando sua carteira.
+4. Excluir Investidor
+   
+Caso o gerente deseje remover o investidor do sistema, ele pode excluir informando o CPF. O sistema localizará os dados do investidor e exibirá as informações associadas           (Saldo, Extrato). Em seguida, o sistema pedirá uma confirmação para a exclusão, garantindo que o processo seja intencional.
 
-6. Ao selecionar Sacar, é solicitado ao usuário o valor a ser sacado, e sua senha de acesso.
+5. Cadastro de Criptomoeda
 
-7. Em Comprar criptomoedas, o usuário deve selecionar o tipo de cripto que deseja comprar, listadas de 1 a 3, apresentando todas as taxas referentes. Posterior a isso, ele deve inserir o valor em REAIS em que será trocado pela correspondente critomoeada, e calculado a taxa referente. Uma solicitação de senha e uma confirmação serão apresentadas, e em caso de confirmação, a criptomoeda é adicionada em sua carteira, e o real descrementado.
+O sistema permite o cadastro de criptomoedas com as seguintes informações:
 
-8. A funçao de vender se baseia na anterior(Comprar criptomoeda), porém os valores de taxas, e calculos são diferentes. Nesse caso o user deve inserir a quantidade de CRIPTOMOEDA, para assim calcular esse cima da cotação atual da moeda selecionada. Por fim, a cripto é decrementada e o real somado a sua carteira.
+Nome da criptomoeda
+Cotação inicial da criptomoeda
+Taxa de compra da criptomoeda
+Taxa de venda da criptomoeda
 
-9. Em Atualizar criptomoeda, como o próprio nome diz, ela atualiza a cotação de todos os valores da criptomoedas, aplicando uma variação de -5% e +5%.
+6. Excluir Criptomoeda
+
+Se necessário, o gerente também permite a exclusão de criptomoedas. O usuário deve fornecer o nome da criptomoeda a ser excluída. O sistema então exibirá os dados da criptomoeda e solicitará uma confirmação antes de removê-la do sistema.
+
+7. Consultar Saldo de um Investidor
+
+Para consultar o saldo de um investidor, o gerente deve fornecer o CPF do investidor, e o sistema retornará o saldo disponível para o investidor utilizar em compras ou transações no mercado.
+
+8. Consultar Extrato de um Investidor
+
+O extrato de um investidor contém um histórico detalhado das transações realizadas, como compras e vendas de criptomoedas, movimentações de saldo e outros eventos. Para acessar o extrato, o gerente deve informar o CPF do investidor, e o sistema exibirá todas as transações realizadas até o momento.
+
+9. Atualizar criptomoeda, como a função do investidor, ela atualiza a cotação de todos os valores da criptomoedas, aplicando uma variação de -5% e +5%.
 
 10. Pressionar sair, levará o usuário ao encerramento do programa.
 
