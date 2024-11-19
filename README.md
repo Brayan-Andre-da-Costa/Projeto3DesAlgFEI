@@ -37,7 +37,8 @@ O gerente pode cadastrar um novo investidor informando os seguintes dados:
 
 4. Excluir Investidor
    
-Caso o gerente deseje remover o investidor do sistema, ele pode excluir informando o CPF. O sistema localizará os dados do investidor e exibirá as informações associadas           (Saldo, Extrato). Em seguida, o sistema pedirá uma confirmação para a exclusão, garantindo que o processo seja intencional.
+Caso o gerente deseje remover o investidor do sistema, ele pode excluir informando o CPF. O sistema localizará os dados do investidor e exibirá as informações associadas 
+(CPF, Nome, Saldo, Extrato). Em seguida, o sistema pedirá uma confirmação para a exclusão, garantindo que o processo seja intencional.
 
 5. Cadastro de Criptomoeda
 
@@ -63,6 +64,15 @@ O extrato de um investidor contém um histórico detalhado das transações real
 9. Atualizar criptomoeda, como a função do investidor, ela atualiza a cotação de todos os valores da criptomoedas, aplicando uma variação de -5% e +5%.
 
 10. Pressionar sair, levará o usuário ao encerramento do programa.
+
+#OBS
+
+Para acessar o arquivo de gerente, a senha padrão é:
+
+-CPF: 01234567890
+-SENHA: 1234
+
+Porém, caso queira adicionar outros gerentes, basta separar  cpf e senha em linhas no arquivo txt, separados por um unico espaço(cpf e senha).
 
 # Lista de Participantes
 
