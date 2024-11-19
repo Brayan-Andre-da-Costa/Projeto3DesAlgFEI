@@ -7,6 +7,8 @@
 #include <unistd.h>
 //VARIAVEIS GLOBAIS
 
+#define MAX_CRIPTOS 100
+
 typedef struct{
     float real;
     float bitcoin;
@@ -14,7 +16,6 @@ typedef struct{
     float ripple;
 } Saldos;
 
-Saldos carteira = {0,0,0,0};
 
 int dia, mes, ano;
 char senA;
@@ -43,141 +44,147 @@ double cBit;
 double cEthe;
 double cRipp;
 
-//login ADM
+typedef struct {
+    char nome[50];
+    float valor;      // Valor atual da criptomoeda
+    float taxaCompra; // Taxa de compra
+    float quantidade;
+} Cripto;
 
-int loginADM(const char* cpf_digitado, const char* senha_digitado, const char* arquivo) {
-    FILE *file = fopen(arquivo, "r");
+typedef struct {
+    float real; 
+    Cripto criptos[100];
+    int totalCriptos;
+} Carteira;
 
+Carteira carteira = {0.0};
+     
+
+//ler as criptos que tem no txt
+//------------------------------------------------------------------------------------------
+
+
+int ler_criptos(Cripto* criptos, int maxCriptos) {
+    FILE* file = fopen("criptos.txt", "r");
     if (file == NULL) {
-        printf("Erro ao acessar os usuarios\n");
+        printf("Erro ao abrir o arquivo de criptomoedas.\n");
         return 0;
     }
 
-    char cpf_a[20], sen_a[20], nome_a[50];
-    
-    // Lê linha por linha
-    while (fscanf(file, "%s %s", cpf_a, sen_a) == 2) {
-        // Compara o CPF e a senha digitados com os armazenados no arquivo
-        if (strcmp(cpf_a, cpf_digitado) == 0 && strcmp(sen_a, senha_digitado) == 0) {
-            fclose(file);
-            printf("Login Efetuado com Sucesso.\n");
-            return 1;
+    int count = 0;
+    char linha[100]; // Buffer para leitura de cada linha
+
+    while (count < maxCriptos && fgets(linha, sizeof(linha), file) != NULL) {
+        if (sscanf(linha, "%49s %f %f", criptos[count].nome, &criptos[count].valor, &criptos[count].taxaCompra) == 3) {
+            criptos[count].taxaCompra /= 100.0; // Converter para decimal (exemplo: 2.0% -> 0.02)
+            count++;
         }
     }
 
     fclose(file);
-    printf("CPF ou senha incorretos.\n");
-    return 0;
+    return count;
 }
 
-// atulizar os valores randomicos
-//--------------------------------------------------------------------------------
-void atualizarValor(float* valor, float variacao) {
-    *valor = *valor * (1.0 + variacao);
-}
+//vender cripto
+//------------------------------------------------------------------------------------------
 
 
-//ATUALIZAR COTAÇÕES ADM
-//------------------------------------------------------------------
-void attCotacao() {
-    char verificar;
-    printf("Deseja atualizar a cotação de todas as criptomoedas? (S/N): ");
-    scanf(" %c", &verificar);
+void venderCripto() {
+    Cripto criptos[100]; // Suporte para até 100 criptomoedas
+    int totalCriptos = ler_criptos(criptos, 100);
 
-    if (toupper(verificar) == 'S') {
-        srand(time(NULL));
-
-        FILE *file = fopen("criptos.txt", "r");
-        if (file == NULL) {
-            printf("Erro ao abrir o arquivo criptos.txt para leitura!\n");
-            return;
-        }
-
-        // Criar um arquivo temporário para armazenar os dados atualizados
-        FILE *tempFile = fopen("cripto_temp.txt", "w");
-        if (tempFile == NULL) {
-            printf("Erro ao criar o arquivo temporário!\n");
-            fclose(file);
-            return;
-        }
-
-        char nome[50];
-        float cotacao, taxaCompra, taxaVenda;
-        while (fscanf(file, "%s %f %f %f", nome, &cotacao, &taxaCompra, &taxaVenda) == 4) {
-            // Gerar uma variação aleatória para cada criptomoeda
-            float variacao = (rand() % 101 - 50) / 1000.0; // Variação entre -5% e +5%
-            printf("****************************************************\n");
-            printf("Atualizando %s:\n", nome);
-            printf("  Valor anterior: %.2f\n", cotacao);
-            atualizarValor(&cotacao, variacao);
-            printf("  Novo valor: %.2f (Variação: %.3f)\n", cotacao, variacao);
-
-            // Escrever os dados atualizados no arquivo temporário
-            fprintf(tempFile, "%s %.2f %.4f %.4f\n", nome, cotacao, taxaCompra, taxaVenda);
-        }
-
-        fclose(file);
-        fclose(tempFile);
-
-        // Substituir o arq original pelo temporario
-        remove("criptos.txt");
-        rename("cripto_temp.txt", "criptos.txt");
-
-        printf("Cotações atualizadas com sucesso!\n");
-    } else {
-        printf("Cotações não alteradas.\n");
-    }
-}
-// ----------------------------------------------------------------------------------------
-// EXCLUIR CRIPTO
-
-void excluirCripto(const char* nomeC ){
-    char criptoArq[] = "criptos.txt";
-    char linha[200];
-    char tempArq[] = "temp.txt" ;
-    int cont = 0;
-    int encontrado = 0;
-
-    // Excluir usuario no Banco de Dados
-
-    FILE* cripto = fopen(criptoArq, "r");
-    FILE* temp = fopen(tempArq, "w");
-
-    if (cripto == NULL || temp == NULL){
-        printf("Erro ao abrir os arquivos\n");
+    if (totalCriptos == 0) {
+        printf("Nenhuma criptomoeda cadastrada!\n");
         return;
     }
 
-    while (fgets(linha, sizeof(linha), cripto) != NULL) {
-        if (strstr(linha, nomeC) == NULL) {
-            fputs(linha, temp); // copia as linha fora do alcance da cripto
+    printf("***********************************************************************\n");
+    printf("Lista de criptomoedas disponíveis para venda:\n");
+    for (int i = 0; i < totalCriptos; i++) {
+        printf("%d - %s // Valor: R$ %.2f // Taxa de Venda: %.2f%%\n", i + 1, criptos[i].nome, criptos[i].valor, criptos[i].taxaCompra * 100);
+    }
+
+    int opcao;
+    printf("Escolha a criptomoeda que deseja vender: ");
+    scanf("%d", &opcao);
+
+    if (opcao < 1 || opcao > totalCriptos) {
+        printf("Opção inválida!\n");
+        return;
+    }
+
+    Cripto criptoSelecionada = criptos[opcao - 1];
+    float quantidadeVenda, valorVenda, taxa, valorRecebido;
+    char confirmacao;
+    char senhaUsuario[12];
+
+    printf("Você escolheu: %s\n", criptoSelecionada.nome);
+    printf("Digite a quantidade que deseja vender: ");
+    scanf("%f", &quantidadeVenda);
+
+    printf("***********************************************************************\n");
+    printf("Insira sua SENHA: ");
+    scanf("%s", senhaUsuario);
+
+    if (strcmp(senha, senhaUsuario) != 0) {
+        printf("Senha incorreta! Operação cancelada.\n");
+        return;
+    }
+
+    valorVenda = quantidadeVenda * criptoSelecionada.valor;
+    taxa = valorVenda * (criptoSelecionada.taxaCompra / 100);
+    valorRecebido = valorVenda - taxa;
+
+    printf("***********************************************************************\n");
+    printf("Resumo da venda:\n");
+    printf("Valor bruto da venda: R$ %.2f\n", valorVenda);
+    printf("Valor da taxa: R$ %.2f\n", taxa);
+    printf("Valor líquido recebido: R$ %.2f\n", valorRecebido);
+    printf("***********************************************************************\n");
+    printf("Você realmente deseja vender %s? (S/N): ", criptoSelecionada.nome);
+    scanf(" %c", &confirmacao);
+
+    if (toupper(confirmacao) == 'S') {
+        // Aqui, você precisará implementar a verificação de saldo dinâmico
+        // e o ajuste do saldo, de forma semelhante ao que fazia com `carteira`.
+
+        if (valorRecebido > carteira.real) { // Exemplo de validação simples
+            printf("Saldo insuficiente para realizar a venda!\n");
         } else {
-            encontrado = 1;
+            // Ajuste o saldo do usuário dinamicamente
+            carteira.real += valorRecebido;
+            printf("Venda de %s realizada com sucesso!\n", criptoSelecionada.nome);
+            printf("Saldo atualizado: R$ %.2f\n", carteira.real);
+
+            // Aqui, você pode salvar o extrato da operação
+            // save_extrato(cpf, dataExt, quantidadeVenda, "Venda de cripto");
         }
+    } else {
+        printf("Venda cancelada.\n");
     }
-
-    fclose(cripto);
-    fclose(temp);
-
-    if (encontrado){
-        remove(criptoArq);
-        rename(tempArq, criptoArq);
-        cont += 1;
-    }
-    else{
-        printf(" Cripto %s nao encontrado\n", nomeC);
-
-    }
-
-    if (cont == 1){
-        printf("Cripto Removida com sucesso\n");
-    }
-    else{
-        printf("Erro na remoção da cripto, por favor contatar o dev: (55) 40028922");
-    }
-
 }
 
+
+//new funçao dinamica compra cripto
+//------------------------------------------------------------------------------------------
+
+void atualizar_arquivo_carteira(const char* cpf, Carteira* carteira) {
+    char nome_arq_c[50];
+    snprintf(nome_arq_c, sizeof(nome_arq_c), "%s_carteira.txt", cpf);
+
+    FILE* file = fopen(nome_arq_c, "w");
+    if (file == NULL) {
+        printf("Erro ao atualizar o arquivo da carteira!\n");
+        return;
+    }
+
+    fprintf(file, "Reais: %.2f\n", carteira->real);
+    for (int i = 0; i < carteira->totalCriptos; i++) {
+        fprintf(file, "%s: %.4f\n", carteira->criptos[i].nome, carteira->criptos[i].valor);
+    }
+
+    fclose(file);
+}
 
 // ----------------------------------------------------------------------------------------
 // PEGAR DADOS DA CRIPTO
@@ -196,10 +203,12 @@ void dadosCripto(const char* cripto){
     while (fscanf(file, "%s %f %f %f", nome, &cotacao, &taxaC, &taxaV) == 4) {
         // Compara o CPF e a senha digitados com os armazenados no arquivo
         if (strcmp(nome, cripto) == 0) {
+            printf("*******************************\n");
             printf("Nome: %s\n", nome);
             printf("Cotação: %.4f\n", cotacao);
-            printf("Taxa de Compra: %.4f\n", taxaC);
-            printf("Taxa de Venda: %.4f\n", taxaV);           
+            printf("Taxa de Compra: %.0f%%\n", taxaC);
+            printf("Taxa de Venda: %.0f%%\n", taxaV);     
+            printf("*******************************\n");      
             encontrada = 1;
         }
     }
@@ -404,6 +413,26 @@ void lerSaldo(const char* cpf){
 
 }
 
+void pegarNome(const char* cpf){
+
+        FILE *file = fopen("usuarios.txt", "r");
+
+        char nome_a[15];
+
+        if (file == NULL){
+            printf("Erro ao abrir o arquivo\n");
+            return;
+        } 
+        while (fscanf(file, "%s %s %[^\n]", cpf_a, sen_a, nome_a) == 3) {
+            // Compara o CPF e a senha digitados com os armazenados no arquivo
+            if (strcmp(cpf_a, cpf) == 0) {
+                fclose(file);
+                printf("Nome: %s\n", nome_a);
+            }
+        }
+}
+
+
 void cadUsuario(char *nCad, char *cpfCad, char *senCad){
 
     FILE *file = fopen("usuarios.txt","a");
@@ -420,37 +449,44 @@ void cadUsuario(char *nCad, char *cpfCad, char *senCad){
 // ----------------------------------------------------------------------------------------
 // FUNÇÃO SALVAR CARTEIRA DO USUARIO
 
+// ----------------------------------------------------------------------------------------
+// FUNÇÃO PARA SALVAR A CARTEIRA
 
-void save_carteira(const char* cpf){
-
+void save_carteira(const char* cpf, Carteira* carteira) {
     char nome_arq_c[50];
-    snprintf(nome_arq_c, sizeof(nome_arq_c), "%s_carteira.bin", cpf);
+    snprintf(nome_arq_c, sizeof(nome_arq_c), "%s_carteira.txt", cpf);
 
-    FILE *file = fopen(nome_arq_c,"wb");
-    if (file == NULL){
-        printf("Erro ao abrir o arquivo\n");
+    FILE *file = fopen(nome_arq_c, "w");
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo para salvar a carteira.\n");
         return;
-    } 
+    }
 
-    fwrite(&carteira, sizeof(Saldos), 1, file);
+    // Salva o saldo em reais
+    fprintf(file, "Reais: %.2f\n", carteira->real);
+
+    // Salva as criptomoedas dinamicamente
+    fprintf(file, "Criptomoedas:\n");
+    for (int i = 0; i < carteira->totalCriptos; i++) {
+        fprintf(file, "%s: %.4f\n", carteira->criptos[i].nome, carteira->criptos[i].valor);
+    }
 
     fclose(file);
 }
+
 // ----------------------------------------------------------------------------------------
-// FUNÇÃO LER O FILE CARTEIRA E RESTABELECER OS VALORES
-
-void load_carteira(const char* cpf){
-
+// FUNÇÃO PARA CARREGAR A CARTEIRA
+void load_carteira(const char* cpf, Carteira* carteira) {
     char nome_arq_c[50];
+    snprintf(nome_arq_c, sizeof(nome_arq_c), "%s_carteira.txt", cpf);
 
-    snprintf(nome_arq_c, sizeof(nome_arq_c), "%s_carteira.bin", cpf);
+    FILE* file = fopen(nome_arq_c, "r");
+    if (file == NULL) {
+        // Se o arquivo não existir, cria um novo
+        printf("Bem-vindo novo Investidor! Criando sua carteira...\n");
 
-    FILE *file = fopen(nome_arq_c, "rb");
-    if (file == NULL){
-        printf("Bem-vindo novo Investidor! Criando sua carteira em\n");
-        //temporizador
+        // Temporizador para simular o processo de criação da carteira
         int t = 5; 
-
         while (t > 0) {
             sleep(1);             
             for (int i = 0; i < t; i++) {
@@ -459,15 +495,55 @@ void load_carteira(const char* cpf){
             printf("\n"); 
             t--; 
         }
-        return;
 
+        // Inicializa os valores da carteira para um novo investidor
+        carteira->real = 0.0;           // Inicializa o saldo em reais como 0
+        carteira->totalCriptos = 0;     // Não há criptomoedas no início
+
+        // Criação do arquivo de carteira com os valores iniciais
+        file = fopen(nome_arq_c, "w");
+        if (file == NULL) {
+            printf("Erro ao criar arquivo de carteira!\n");
+            return;
+        }
+
+        // Escreve o saldo inicial e criptomoedas vazias no arquivo
+        fprintf(file, "Reais: %.2f\n", carteira->real);
+        fclose(file);
+
+        return;
     }
-    fread(&carteira, sizeof(Saldos), 1, file);
+
+    // Leitura do saldo em reais
+    fscanf(file, "Reais: %f\n", &carteira->real);
+
+    // Leitura dos saldos das criptomoedas
+    carteira->totalCriptos = 0;
+    while (fscanf(file, "%49[^:]: %f\n", 
+                  carteira->criptos[carteira->totalCriptos].nome, &carteira->criptos[carteira->totalCriptos].valor) == 2) {
+        carteira->totalCriptos++;
+    }
 
     fclose(file);
 }
 
+// ----------------------------------------------------------------------------------------
+// FUNÇÃO PARA EXIBIR A CARTEIRA
 
+void puxar_carteira(const char* cpf) {
+    Carteira carteira;
+
+    load_carteira(cpf, &carteira);
+
+    // Exibe o saldo em reais
+    printf("Saldo em reais: R$ %.2f\n", carteira.real);
+
+    // Exibe as criptomoedas
+    printf("Criptomoedas:\n");
+    for (int i = 0; i < carteira.totalCriptos; i++) {
+        printf("%s: %.4f\n", carteira.criptos[i].nome, carteira.criptos[i].valor);
+    }
+}
 // ----------------------------------------------------------------------------------------
 // FUNÇÃO SALVAR EXTRATO
 
@@ -575,33 +651,100 @@ void menu2(){
 // ----------------------------------------------------------------------------------------
 // FUNÇÃO SALDO
 
-void um(){
+void consultar_saldo(const char* cpf) {
+    char nome_arq_c[50];
+    snprintf(nome_arq_c, sizeof(nome_arq_c), "%s_carteira.txt", cpf);
+
+    FILE* file = fopen(nome_arq_c, "r");
+    if (file == NULL) {
+        printf("Investidor não encontrado! Criando sua carteira...\n");
+        return;
+    }
+
+    // Criação da estrutura de carteira para armazenar os dados lidos
+    Carteira carteira;
+    int totalCriptos = 0;
+
+    // Leitura do saldo em reais
+    fscanf(file, "Reais: %f\n", &carteira.real);
+
+    // Verifique se a leitura do saldo foi bem-sucedida
+    printf("Saldo em reais lido: R$ %.2f\n", carteira.real);
+
+    // Leitura dos saldos das criptomoedas
+    while (fscanf(file, "%49s: %f\n", carteira.criptos[totalCriptos].nome, &carteira.criptos[totalCriptos].quantidade) == 2) {
+        printf("Cripto %d lida: %s - %.4f\n", totalCriptos + 1, carteira.criptos[totalCriptos].nome, carteira.criptos[totalCriptos].quantidade);  // Depuração
+        totalCriptos++;
+        if (totalCriptos >= MAX_CRIPTOS) break;  // Limita o número de criptomoedas
+    }
+
+    fclose(file);
+
+    // Exibindo os saldos
     printf("***********************************************************************\n");
-    printf("Voce tem essa quantidade de Reais em sua carteira: R$%.2f\n", carteira.real);
-    printf("Voce tem essa quantidade de Bitcoin em sua carteira: %.4f\n", carteira.bitcoin);
-    printf("Voce tem essa quantidade de Ethereum em sua carteira: %.4f\n", carteira.ethereum);
-    printf("Voce tem essa quantidade de Ripple em sua carteira: %.4f\n", carteira.ripple);
+    printf("Saldo do investidor %s:\n", cpf);
+    printf("Saldo em Reais: R$ %.2f\n", carteira.real);
+
+    // Exibe as criptomoedas que o investidor possui
+    if (totalCriptos > 0) {
+        for (int i = 0; i < totalCriptos; i++) {
+            printf("Saldo de %s: %.4f\n", carteira.criptos[i].nome, carteira.criptos[i].quantidade);
+        }
+    } else {
+        printf("O investidor não possui criptomoedas.\n");
+    }
+
+    printf("***********************************************************************\n");
 }
+
 // ----------------------------------------------------------------------------------------
 // DEPOSITAR
+void depositar(const char* cpf, float deposito) {
+    char nome_arq_c[50];
+    snprintf(nome_arq_c, sizeof(nome_arq_c), "%s_carteira.txt", cpf);
 
-void tres(){
-    float deposito;
+    FILE* file = fopen(nome_arq_c, "r+");  // Abre o arquivo para leitura e escrita
+    if (file == NULL) {
+        printf("Erro: Arquivo da carteira não encontrado!\n");
+        return;
+    }
 
-    printf("***********************************************************************\n");
-    printf("Insira o quanto deseja depositar: ");
-    scanf("%f", &deposito);
+    float saldoAtual;
+    char linha[100];
+    char criptos[1000] = "";  // Variável para armazenar as criptomoedas
 
-    carteira.real += deposito;
-    
-    printf("Valor depositado R$ %.2f\n ", deposito);
-    printf("Novo saldo R$ %.2f\n ", carteira.real);
-    valorExt = deposito;
-    sprintf(descExt,"Deposito em Reais.");
-    save_extrato(cpf, dataExt, valorExt, descExt);
+    // Lê a linha do saldo em reais
+    if (fgets(linha, sizeof(linha), file) != NULL) {
+        sscanf(linha, "Reais: %f", &saldoAtual);  // Extrai o saldo atual
+    } else {
+        printf("Erro ao ler o saldo atual.\n");
+        fclose(file);
+        return;
+    }
 
+    // Atualiza o saldo com o depósito
+    saldoAtual += deposito;
+
+    // Lê o restante do arquivo para armazenar as criptomoedas
+    while (fgets(linha, sizeof(linha), file) != NULL) {
+        strcat(criptos, linha);  // Concatena as linhas com as criptomoedas
+    }
+
+    // Volta ao início do arquivo para reescrever o saldo e as criptos
+    rewind(file);
+
+    // Reescreve o saldo em reais
+    fprintf(file, "Reais: %.2f\n", saldoAtual);
+
+    // Reescreve as criptomoedas no arquivo
+    fprintf(file, "%s", criptos);
+
+    fclose(file);  // Fecha o arquivo
+
+    // Exibe o resultado
+    printf("Valor depositado: R$ %.2f\n", deposito);
+    printf("Novo saldo em reais: R$ %.2f\n", saldoAtual);
 }
-
 // ----------------------------------------------------------------------------------------
 // SACAR
 
@@ -632,322 +775,250 @@ void quatro(){
     }
 }
 
+// Função para comprar criptomoeda
+void comprarCripto(const char* cpf) {
+    Cripto criptos[MAX_CRIPTOS];
+    int totalCriptos = ler_criptos(criptos, MAX_CRIPTOS);  // Lê as criptos disponíveis
 
-// ----------------------------------------------------------------------------------------
-// COMPRAR CRIPTOS
+    if (totalCriptos == 0) {
+        printf("Nenhuma criptomoeda cadastrada!\n");
+        return;
+    }
 
-typedef struct{
-    float v_bit;
-    float v_eth;
-    float v_rip;
-} Criptos;
-
-Criptos valoresC = {334745.55,15093.47,2.65};
-
-float valC;
-int opcao;
-float taxa;
-float totct; 
-float criptoC;
-char verificar;
-
-void cinco(){
     printf("***********************************************************************\n");
-    printf("1 - BITCOIN // Taxa de compra em 2%% \n");
-    printf("2 - ETHEREUM // Taxa de compra em 1%%\n");
-    printf("3 - RIPPLE // Taxa de compra em 1%%\n");
-    printf("Escolha a cripto que deseja comprar: ");
+    printf("Lista de criptomoedas disponíveis:\n");
+    for (int i = 0; i < totalCriptos; i++) {
+        printf("%d - %s // Valor: R$ %.2f // Taxa de Compra: %.2f%%\n", 
+               i + 1, criptos[i].nome, criptos[i].valor, criptos[i].taxaCompra * 100);
+    }
+
+    int opcao;
+    printf("Escolha a criptomoeda que deseja comprar: ");
     scanf("%d", &opcao);
-    if (opcao ==  1){
-        printf("Valor do BITCOIN R$ %.2f\n", valoresC.v_bit);
-        printf("Digite o valor que deseja comprar: ");
-        scanf("%f", &valC);
-        printf("***********************************************************************\n");
-        printf("Insira sua SENHA: ");
-        scanf("%11s", senUser);
-        if (strcmp(senha, senUser)==0) {
-            criptoC =  valC/valoresC.v_bit;
-            taxa = valC * 0.02;
-            printf("Valor da taxa: R$ %.2f\n", taxa);
-            totct = valC + taxa;
-            printf("Valor a ser pago pela criptomoeda: R$ %.2f\n", totct);
-            printf("***********************************************************************\n");
-            printf("Você realmente deseja comprar o BITCOIN? (S/N): ");
-            scanf(" %c", &verificar);
-            if (toupper(verificar) == 'S'){
-                if (totct > carteira.real){
-                    printf("Saldo insuficiente!!!\n");
-                }
-                else{
-                    printf("Compra realizada com sucesso!!!\n");
-                    carteira.real -= totct;
-                    carteira.bitcoin += criptoC;
-                    printf("Total de Bitcoins em sua carteira: %.4f\n", carteira.bitcoin);
-                    valorExt = criptoC;
-                    sprintf(descExt,"Compra de Bitcoin.");
-                    save_extrato(cpf, dataExt, valorExt, descExt);
-                }
-            }
-            else{
-                printf("Tudo bem, voltando ao menu...\n");
-            }
-        }
-        else{
-            printf("Senha errada\n");    
-        }
-    }
-    else if (opcao == 2){
-        printf("Valor do Ethereum R$ %.2f\n", valoresC.v_eth);
-        printf("Digite o valor que deseja comprar: ");
-        scanf("%f", &valC);
-        printf("***********************************************************************\n");
-        printf("Insira sua SENHA: ");
-        scanf("%11s", senUser);
-        if (strcmp(senha, senUser) == 0){
-            criptoC =  valC/valoresC.v_eth;
-            taxa = valC * 0.01;
-            printf("Valor da taxa: R$ %.2f\n", taxa);
-            totct = valC + taxa;
-            printf("Valor a ser pago pela criptomoeda: R$ %.2f\n", totct);
-            printf("***********************************************************************\n");
-            printf("Você realmente deseja comprar o BITCOIN? (S/N): ");
-            scanf(" %c", &verificar);
-            if (toupper(verificar) == 'S'){
-                if (totct > carteira.real){
-                    printf("Saldo insuficiente!!!\n");
-                }
-                else{
-                    printf("Compra realizada com sucesso!!!\n");
-                    carteira.real -= totct;
-                    carteira.ethereum += criptoC;
-                    printf("Total de Ethereums em sua carteira: %.4f\n", carteira.ethereum);
-                    valorExt = criptoC;
-                    sprintf(descExt,"Compra de Ethereum.");
-                    save_extrato(cpf, dataExt, valorExt, descExt);
-                }
-            }
-            else{
-                printf("Tudo bem, voltando ao menu...\n");
-            }
-        }
-        else{
-            printf("Senha errada\n");    
-        }
-       
-    }
-    else if (opcao == 3){
-        printf("Valor do Ripple R$ %.2f\n", valoresC.v_rip);
-        printf("Digite o valor que deseja comprar: ");
-        scanf("%f", &valC);
-        printf("***********************************************************************\n");
-        printf("Insira sua SENHA: ");
-        scanf("%11s", senUser);
-        if (strcmp(senha, senUser) == 0){
-            criptoC =  valC/valoresC.v_rip;
-            taxa = valC * 0.01;
-            printf("Valor da taxa: R$ %.2f\n", taxa);
-            totct = valC + taxa;
-            printf("Valor a ser pago pela criptomoeda: R$ %.2f\n", totct);
-            printf("***********************************************************************\n");
-            printf("Você realmente deseja comprar o BITCOIN? (S/N): ");
-            scanf(" %c", &verificar);
-            if (toupper(verificar) == 'S'){
-                if (totct > carteira.real){
-                    printf("Saldo insuficiente!!!\n");
-                }
-                else{
-                    printf("Compra realizada com sucesso!!!\n");
-                    carteira.real -= totct;
-                    carteira.ripple += criptoC;
-                    printf("Total de Ripples em sua carteira: %.4f\n", carteira.ripple);
-                    valorExt = criptoC;
-                    sprintf(descExt,"Compra de Ripple.");
-                    save_extrato(cpf, dataExt, valorExt, descExt);
-                }
-            }
-            else{
-                printf("Tudo bem, voltando ao menu...\n");
-            }
-        }
-        else{
-            printf("Senha errada\n");    
-        }
-       
-    }
-    else{
-        printf("Criptomoeda nao encontrada!!!\n");
-    }
-}
-// ----------------------------------------------------------------------------------------
-// VENDER CRIPTOS
 
-float qtdC;
+    if (opcao < 1 || opcao > totalCriptos) {
+        printf("Opção inválida!\n");
+        return;
+    }
 
-void seis(){
+    Cripto criptoSelecionada = criptos[opcao - 1];
+    float valorCompra, taxa, valorTotal, quantidadeComprada;
+    char confirmacao;
+    char senhaUsuario[12];
+
+    // Carrega a carteira do investidor
+    Carteira carteira;
+    load_carteira(cpf, &carteira);
+
+    printf("Você escolheu: %s\n", criptoSelecionada.nome);
+    printf("Digite o valor em reais que deseja investir: ");
+    scanf("%f", &valorCompra);
+
+    taxa = valorCompra * criptoSelecionada.taxaCompra;
+    valorTotal = valorCompra + taxa;
+    quantidadeComprada = valorCompra / criptoSelecionada.valor;
+
     printf("***********************************************************************\n");
-    printf("1 - BITCOIN // Taxa de venda em 3%% \n");
-    printf("2 - ETHEREUM // Taxa de venda em 2%%\n");
-    printf("3 - RIPPLE // Taxa de venda em 1%%\n");
-    printf("Escolha a cripto que deseja vender: ");
-    scanf("%d", &opcao);
-    if (opcao ==  1){
-        printf("Valor do BITCOIN R$ %.2f\n", valoresC.v_bit);
-        printf("Digite a quantidade que deseja vender: ");
-        scanf(" %f", &qtdC);
-        printf("***********************************************************************\n");
-        printf("Insira sua SENHA: ");
-        scanf(" %11s", senUser);
-        if (strcmp(senha, senUser) == 0){
-            criptoC =  qtdC*valoresC.v_bit;
-            taxa = criptoC * 0.03;
-            printf("Valor da taxa: R$ %.2f\n", taxa);
-            totct = criptoC - taxa;
-            printf("Valor a ser recebido pela criptomoeda: R$ %.2f\n", totct);
-            printf("***********************************************************************\n");
-            printf("Você realmente deseja vender o BITCOIN? (S/N): ");
-            scanf(" %c", &verificar);
-            if (toupper(verificar) == 'S'){
-                if (qtdC > carteira.bitcoin){
-                    printf("Saldo insuficiente!!!\n");
-                }
-                else{
-                    printf("Venda realizada com sucesso!!!\n");
-                    carteira.real += totct;
-                    carteira.bitcoin -= qtdC;
-                    printf("Total de Bitcoins em sua carteira: %.4f\n", carteira.bitcoin);
-                    valorExt = qtdC;
-                    sprintf(descExt,"Venda de Bitcoin.");
-                    save_extrato(cpf, dataExt, valorExt, descExt);
-                }
-            }
-            else{
-                printf("Tudo bem, voltando ao menu...\n");
-            }
-        }
-        else{
-            printf("Senha errada\n");    
+    printf("Resumo da compra:\n");
+    printf("Valor da taxa: R$ %.2f\n", taxa);
+    printf("Valor total a ser pago: R$ %.2f\n", valorTotal);
+    printf("Quantidade de %s adquirida: %.4f\n", criptoSelecionada.nome, quantidadeComprada);
+    printf("***********************************************************************\n");
+    printf("Confirme sua senha: ");
+    scanf("%s", senhaUsuario);
+
+    // Verifica se a senha está correta
+    if (strcmp(senha, senhaUsuario) != 0) {
+        printf("Senha incorreta! Operação cancelada.\n");
+        return;
+    }
+
+    // Verifica se o investidor tem saldo suficiente
+    if (valorTotal > carteira.real) {
+        printf("Saldo insuficiente para realizar a compra!\n");
+        return;
+    }
+
+    // Atualiza o saldo em reais
+    carteira.real -= valorTotal;
+
+    // Atualiza a quantidade da criptomoeda comprada na carteira
+    int criptoExistente = 0;
+    for (int i = 0; i < carteira.totalCriptos; i++) {
+        if (strcmp(carteira.criptos[i].nome, criptoSelecionada.nome) == 0) {
+            carteira.criptos[i].valor += quantidadeComprada; // Incrementa a quantidade
+            criptoExistente = 1;
+            break;
         }
     }
-    else if (opcao ==  2){
-        printf("Valor do ETHEREUM R$ %.2f\n", valoresC.v_eth);
-        printf("Digite a quantidade que deseja vender: ");
-        scanf(" %f", &qtdC);
-        printf("***********************************************************************\n");
-        printf("Insira sua SENHA: ");
-        scanf(" %11s", senUser);
-        if (strcmp(senha, senUser) == 0){
-            criptoC =  qtdC*valoresC.v_eth;
-            taxa = criptoC * 0.02;
-            printf("Valor da taxa: R$ %.2f\n", taxa);
-            totct = criptoC - taxa;
-            printf("Valor a ser recebido pela criptomoeda: R$ %.2f\n", totct);
-            printf("***********************************************************************\n");
-            printf("Você realmente deseja vender o Ethereum? (S/N): ");
-            scanf(" %c", &verificar);
-            if (toupper(verificar) == 'S'){
-                if (qtdC > carteira.ethereum){
-                    printf("Saldo insuficiente!!!\n");
-                }
-                else{
-                    printf("Compra realizada com sucesso!!!\n");
-                    carteira.real += totct;
-                    carteira.ethereum -= qtdC;
-                    printf("Total de Ethereum em sua carteira: %.4f\n", carteira.ethereum);
-                    valorExt = qtdC;
-                    sprintf(descExt,"Venda de Ethereum.");
-                    save_extrato(cpf, dataExt, valorExt, descExt);
-                }
-            }
-            else{
-                printf("Tudo bem, voltando ao menu...\n");
-            }
-        }
-        else{
-            printf("Senha errada\n");    
+
+    // Se a criptomoeda não existe na carteira, adiciona ela
+    if (!criptoExistente) {
+        if (carteira.totalCriptos < MAX_CRIPTOS) {
+            strcpy(carteira.criptos[carteira.totalCriptos].nome, criptoSelecionada.nome);
+            carteira.criptos[carteira.totalCriptos].valor = quantidadeComprada;
+            carteira.totalCriptos++;
+        } else {
+            printf("Não foi possível adicionar a criptomoeda. Limite de %d atingido.\n", MAX_CRIPTOS);
+            return;
         }
     }
-    else if (opcao ==  3){
-        printf("Valor do RIPPLE R$ %.2f\n", valoresC.v_rip);
-        printf("Digite a quantidade que deseja vender: ");
-        scanf(" %f", &qtdC);
-        printf("***********************************************************************\n");
-        printf("Insira sua SENHA: ");
-        scanf(" %11s", senUser);
-        if (strcmp(senha, senUser) == 0){
-            criptoC =  qtdC*valoresC.v_rip;
-            taxa = criptoC * 0.01;
-            printf("Valor da taxa: R$ %.2f\n", taxa);
-            totct = criptoC - taxa;
-            printf("Valor a ser recebido pela criptomoeda: R$ %.2f\n", totct);
-            printf("***********************************************************************\n");
-            printf("Você realmente deseja vender a Ripple? (S/N): ");
-            scanf(" %c", &verificar);
-            if (toupper(verificar) == 'S'){
-                if (qtdC > carteira.ripple){
-                    printf("Saldo insuficiente!!!\n");
-                }
-                else{
-                    printf("Compra realizada com sucesso!!!\n");
-                    carteira.real += totct;
-                    carteira.ripple -= qtdC;
-                    printf("Total de Ripple em sua carteira: %.4f\n", carteira.ripple);
-                    valorExt = qtdC;
-                    sprintf(descExt,"Venda de Ripple.");
-                    save_extrato(cpf, dataExt, valorExt, descExt);
-                }
-            }
-            else{
-                printf("Tudo bem, voltando ao menu...\n");
-            }
-        }
-        else{
-            printf("Senha errada\n");    
-        }
+
+    // Atualiza o arquivo diretamente
+    char nome_arq_c[50];
+    snprintf(nome_arq_c, sizeof(nome_arq_c), "%s_carteira.txt", cpf);
+
+    FILE* file = fopen(nome_arq_c, "w");
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo da carteira para atualização!\n");
+        return;
     }
-    else{
-        printf("Criptomoeda nao encontrada!!!\n");
+
+    fprintf(file, "Reais: %.2f\n", carteira.real);
+    for (int i = 0; i < carteira.totalCriptos; i++) {
+        fprintf(file, "%s: %.4f\n", carteira.criptos[i].nome, carteira.criptos[i].valor);
     }
+
+    fclose(file);
+
+    printf("Compra de %s realizada com sucesso!\n", criptoSelecionada.nome);
+    printf("Saldo restante: R$ %.2f\n", carteira.real);
 }
 
-// ----------------------------------------------------------------------------------------
-// ATUALIZAR COTAÇÃO
-void sete(){
+//login ADM
+//-------------------------------------------------------------------------------------------
+int loginADM(const char* cpf_digitado, const char* senha_digitado, const char* arquivo) {
+    FILE *file = fopen(arquivo, "r");
+
+    if (file == NULL) {
+        printf("Erro ao acessar os usuarios\n");
+        return 0;
+    }
+
+    char cpf_a[20], sen_a[20], nome_a[50];
+    
+    // Lê linha por linha
+    while (fscanf(file, "%s %s", cpf_a, sen_a) == 2) {
+        // Compara o CPF e a senha digitados com os armazenados no arquivo
+        if (strcmp(cpf_a, cpf_digitado) == 0 && strcmp(sen_a, senha_digitado) == 0) {
+            fclose(file);
+            printf("Login Efetuado com Sucesso.\n");
+            return 1;
+        }
+    }
+
+    fclose(file);
+    printf("CPF ou senha incorretos.\n");
+    return 0;
+}
+
+// atulizar os valores randomicos
+//--------------------------------------------------------------------------------
+void atualizarValor(float* valor, float variacao) {
+    *valor = *valor * (1.0 + variacao);
+}
+
+
+//ATUALIZAR COTAÇÕES ADM
+//------------------------------------------------------------------
+void attCotacao() {
+    char verificar;
     printf("Deseja atualizar a cotação de todas as criptomoedas? (S/N): ");
     scanf(" %c", &verificar);
-    if (toupper(verificar) == 'S'){
 
-        void atualizarValor(float* valor, float* variacao) {
-            *valor = *valor * (1.0 + *variacao);
-        }
-
+    if (toupper(verificar) == 'S') {
         srand(time(NULL));
 
-        float variacao_bit =  (rand()% 101 - 50) / 1000.00;
-        float variacao_eth =  (rand()% 101 - 50) / 1000.00;
-        float variacao_rip =  (rand()% 101 - 50) / 1000.00;
+        FILE *file = fopen("criptos.txt", "r");
+        if (file == NULL) {
+            printf("Erro ao abrir o arquivo criptos.txt para leitura!\n");
+            return;
+        }
 
-        //att cotação bitcoin
-        printf("Valor anterior a atualização: %.2f \n", valoresC.v_bit);
-        atualizarValor(&valoresC.v_bit, &variacao_bit);
-        printf("Atualização da cotação do bitcoin: %.2f\n", valoresC.v_bit);
-        printf("variação: %.3f\n", variacao_bit);
-        printf("***********************************************************************\n");
+        // Criar um arquivo temporário para armazenar os dados atualizados
+        FILE *tempFile = fopen("cripto_temp.txt", "w");
+        if (tempFile == NULL) {
+            printf("Erro ao criar o arquivo temporário!\n");
+            fclose(file);
+            return;
+        }
 
-        //att cotação ethereum
-        printf("Valor anterior a atualização: %.2f \n", valoresC.v_eth);
-        atualizarValor(&valoresC.v_eth, &variacao_eth);
-        printf("Atualização da cotação do Ethereum: %.2f\n", valoresC.v_eth);
-        printf("variação: %.3f\n", variacao_eth);
-        printf("***********************************************************************\n");
+        char nome[50];
+        float cotacao, taxaCompra, taxaVenda;
+        while (fscanf(file, "%s %f %f %f", nome, &cotacao, &taxaCompra, &taxaVenda) == 4) {
+            // Gerar uma variação aleatória para cada criptomoeda
+            float variacao = (rand() % 101 - 50) / 1000.0; // Variação entre -5% e +5%
+            printf("****************************************************\n");
+            printf("Atualizando %s:\n", nome);
+            printf("  Valor anterior: %.2f\n", cotacao);
+            atualizarValor(&cotacao, variacao);
+            printf("  Novo valor: %.2f (Variação: %.3f)\n", cotacao, variacao);
 
-        //att cotação riple
-        printf("Valor anterior a atualização: %.2f \n", valoresC.v_rip);
-        atualizarValor(&valoresC.v_rip, &variacao_rip);
-        printf("Atualização da cotação do Ripple: %.2f\n", valoresC.v_rip);
-        printf("variação: %.3f\n", variacao_rip);
+            // Escrever os dados atualizados no arquivo temporário
+            fprintf(tempFile, "%s %.2f %.4f %.4f\n", nome, cotacao, taxaCompra, taxaVenda);
+        }
 
-    }
-    else{
-        printf("Os valores das criptomoedas não serão alterados! \n");
+        fclose(file);
+        fclose(tempFile);
+
+        // Substituir o arq original pelo temporario
+        remove("criptos.txt");
+        rename("cripto_temp.txt", "criptos.txt");
+
+        printf("Cotações atualizadas com sucesso!\n");
+    } else {
+        printf("Cotações não alteradas.\n");
     }
 }
+// ----------------------------------------------------------------------------------------
+// EXCLUIR CRIPTO
+
+void excluirCripto(const char* nomeC ){
+    char criptoArq[] = "criptos.txt";
+    char linha[200];
+    char tempArq[] = "temp.txt" ;
+    int cont = 0;
+    int encontrado = 0;
+
+    // Excluir usuario no Banco de Dados
+
+    FILE* cripto = fopen(criptoArq, "r");
+    FILE* temp = fopen(tempArq, "w");
+
+    if (cripto == NULL || temp == NULL){
+        printf("Erro ao abrir os arquivos\n");
+        return;
+    }
+
+    while (fgets(linha, sizeof(linha), cripto) != NULL) {
+        if (strstr(linha, nomeC) == NULL) {
+            fputs(linha, temp); // copia as linha fora do alcance da cripto
+        } else {
+            encontrado = 1;
+        }
+    }
+
+    fclose(cripto);
+    fclose(temp);
+
+    if (encontrado){
+        remove(criptoArq);
+        rename(tempArq, criptoArq);
+        cont += 1;
+    }
+    else{
+        printf(" Cripto %s nao encontrado\n", nomeC);
+
+    }
+
+    if (cont == 1){
+        printf("Cripto Removida com sucesso\n");
+    }
+    else{
+        printf("Erro na remoção da cripto, por favor contatar o dev: (55) 40028922");
+    }
+
+}
+
+
+

@@ -21,3 +21,7 @@ void lerExt(const char* cpf);
 void attCotacao();
 
 int loginADM(const char* cpf_digitado, const char* senha_digitado, const char* arquivo);
+
+void pegarNome(const char* cpf);
+
+

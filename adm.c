@@ -65,24 +65,32 @@ int main(){
             case 2:
                 printf("Digite o cpf que deseja excluir: ");
                 scanf(" %11s", cpfExc);
-                printf("Dados do úsuario...\n");
-                printf("**********************************\n");
-                printf("Extrato: \n");
-                printf(" \n");
-                lerExt(cpfExc);
-                printf("**********************************\n");
-                printf("Saldo:\n");
-                printf("\n");
-                lerSaldo(cpfExc);
-                printf("\n");
-                printf("Você realmente deseja excluir esse usuário(S/N)? ");
-                scanf(" %c", &entrar);
-                if (toupper(entrar) == 'N'){
-                    printf("Voltando ao menu...\n");
-                    return 1;
+                if(verificaCad(cpfExc)){
+                    printf("Dados do úsuario...\n");
+                    printf("CPF: %s\n", cpfExc);
+                    pegarNome(cpfExc);
+                    printf("**********************************\n");
+                    printf("Extrato: \n");
+                    printf(" \n");
+                    lerExt(cpfExc);
+                    printf("**********************************\n");
+                    printf("Saldo:\n");
+                    printf("\n");
+                    lerSaldo(cpfExc);
+                    printf("\n");
+                    printf("Você realmente deseja excluir esse usuário(S/N)? ");
+                    scanf(" %c", &entrar);
+                    if (toupper(entrar) == 'N'){
+                        printf("Voltando ao menu...\n");
+                    }
+                    else{
+                        printf("excluindo...\n");
+                        excluirUsuario(cpfExc);
+                    }
+                    break;
+                    
                 }
-                printf("excluindo...\n");
-                excluirUsuario(cpfExc);
+                printf("Usuário não encontrado.\n");
                 break;
 
             case 3:
@@ -108,7 +116,7 @@ int main(){
                 scanf(" %s", &entrar);
                 if(toupper(entrar) == 'N'){
                     printf("Saindo...\n");
-                    return 1;
+                    break;
                 }
                 excluirCripto(criptoExcluir);
                 break;

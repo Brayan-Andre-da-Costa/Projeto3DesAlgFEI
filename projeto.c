@@ -8,16 +8,14 @@
 #define NUM_USUARIO 10
 #define NUM_EXTRATO 100
 
+float deposito;
+
 struct usuario {
     char cpf[12];  
     char senha[20]; 
 };
 
 void passarSenha(const char* senUser, const char* CPF);
-
-void save_carteira(const char* cpf);
-
-void load_carteira(const char* cpf);
 
 
 int main() {
@@ -43,31 +41,32 @@ int main() {
 
         if (encontrado) {
             const char* cpf = s_cpf;
-            load_carteira(cpf);
+            puxar_carteira(cpf);
             while (true) {
                 const char* CPF = s_cpf;
                 const char* senUser = s_sen;
                 passarSenha(senUser, CPF);
-                save_carteira(cpf);
                 menu();
 
                 int op;
                 printf("Digite sua opcao: ");
                 scanf(" %d", &op);
                 if (op == 1) {
-                    um();
+                    consultar_saldo(cpf);
                 } else if (op == 2) {
                     lerExt(cpf);
                 } else if (op == 3) {
-                    tres();
+                    printf("Digite o quanto deseja depositar: ");
+                    scanf(" %f", &deposito);
+                    depositar(cpf, deposito);
                 } else if (op == 4) {
                     quatro();
                 } else if (op == 5) {
-                    cinco();
+                    comprarCripto();
                 } else if (op == 6) {
-                    seis();
+                    venderCripto();
                 } else if (op == 7) {
-                    sete();
+                    attCotacao();
                 } else if (op == 8) {
                     break;  
                 } else {
