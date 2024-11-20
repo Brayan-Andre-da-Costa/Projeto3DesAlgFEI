@@ -3,19 +3,9 @@
 
 void menu();
 
-float um();
-
-void tres();
-
-void quatro();
-
-void cinco();
-
-void seis();
+void sacar();
 
 void lerExt(const char* cpf);
-
-void sete();
 
 int login();
 
@@ -34,5 +24,7 @@ void consultar_saldo(const char* cpf);
 void depositar(const char* cpf, float deposito);
 
 void puxar_save_carteira(const char* cpf);
+
+void puxar_carregar_carteira(const char* cpf);
 
 #endif  

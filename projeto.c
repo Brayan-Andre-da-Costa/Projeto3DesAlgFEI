@@ -41,7 +41,7 @@ int main() {
 
         if (encontrado) {
             const char* cpf = s_cpf;
-            puxar_carteira(cpf);
+            puxar_carregar_carteira(cpf);
             while (true) {
                 const char* CPF = s_cpf;
                 const char* senUser = s_sen;
@@ -52,7 +52,8 @@ int main() {
                 printf("Digite sua opcao: ");
                 scanf(" %d", &op);
                 if (op == 1) {
-                    consultar_saldo(cpf);
+                    printf("************************\n");
+                    puxar_carteira(s_cpf);
                 } else if (op == 2) {
                     lerExt(cpf);
                 } else if (op == 3) {
@@ -60,11 +61,11 @@ int main() {
                     scanf(" %f", &deposito);
                     depositar(cpf, deposito);
                 } else if (op == 4) {
-                    quatro();
+                    sacar(cpf);
                 } else if (op == 5) {
-                    comprarCripto();
+                    comprarCripto(cpf);
                 } else if (op == 6) {
-                    venderCripto();
+                    venderCripto(cpf);
                 } else if (op == 7) {
                     attCotacao();
                 } else if (op == 8) {

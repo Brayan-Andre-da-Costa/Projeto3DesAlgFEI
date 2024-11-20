@@ -1,1 +1,3 @@
-Reais: 500000.00
+Reais: 519602.12
+ripple: 58.4756
+bitcoin: 0.0284

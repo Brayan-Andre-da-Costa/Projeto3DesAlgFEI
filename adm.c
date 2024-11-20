@@ -35,11 +35,6 @@ int main(){
     if (!encontrado){
         return 1;
     }
-    // if (strcmp(cpfAcesso, "123") != 0 || strcmp(senhaAcesso, "123") != 0){
-    //     printf("Acesso negado!\n");
-    //     return 1;
-    // }
-
     while (true){
         menu2();
         printf("Digite a opção que deseja acessar: ");
@@ -125,7 +120,7 @@ int main(){
                 printf("Digite o CPF que deseja consultar o saldo: ");
                 scanf(" %11s", cpfCon);
                 printf("**************************************\n");
-                lerSaldo(cpfCon);
+                puxar_carteira(cpfCon);
                 printf("**************************************\n");
                 break;
 
